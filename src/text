@@ -1,0 +1,75 @@
+const mongoose = require("mongoose");
+
+const discountsSchema = mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    description: { type: String },
+    applicableTo: {
+      type: String,
+      enum: ["poss", "ecommerce", "both"],
+      required: true,
+      default: "both",
+    },
+    possSettings: {
+      applicableBranches: [
+        { type: mongoose.Schema.Types.ObjectId, ref: "Branch" },
+      ],
+      cashOnly: {
+        type: Boolean,
+        default: false,
+      },
+    },
+    ecommerceSettings: {
+      autoApply: { type: Boolean, default: false },
+    },
+    customerTiers: {
+      type: [
+        {
+          type: String,
+          enum: ["regular", "gold", "platinum", "diamond", "all"],
+          default: "all",
+        },
+      ],
+      required: true,
+    },
+    tierSettings: {
+      gold: {
+        discountValue: { type: Number },
+        maxUsage: { type: Number },
+      },
+      platinum: {
+        discountValue: { type: Number },
+        maxUsage: { type: Number },
+      },
+      diamond: {
+        discountValue: { type: Number },
+        maxUsage: { type: Number },
+      },
+    },
+    discountType: {
+      type: String,
+      enum: ["percentage", "fixed", "bogo"],
+      required: true,
+    },
+    bogoSettings: {
+      buyQuantity: { type: Number },
+      getQuantity: { type: Number },
+      productToGet: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+    },
+    applicableProducts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+    ],
+    minPurchase: { type: Number },
+    value: { type: Number, required: true },
+    code: { type: String, unique: true },
+    startDate: { type: Date, required: true },
+    endDate: { type: Date, required: true },
+    usageLimit: { type: Number },
+  },
+  { timestamps: true }
+);
+
+module.exports = discountsSchema;
