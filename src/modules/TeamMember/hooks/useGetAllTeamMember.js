@@ -2,7 +2,10 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { toast } from "react-toastify";
-import { useDeleteTeamMemberMutation, useGetAllTeamMemberQuery } from "../../../rtk/teamMemberApi/teamMemberApi";
+import {
+  useDeleteTeamMemberMutation,
+  useGetAllTeamMemberQuery,
+} from "../../../rtk/teamMemberApi/teamMemberApi";
 
 const useGetAllTeamMember = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -25,22 +28,19 @@ const useGetAllTeamMember = () => {
     refetch,
   } = useGetAllTeamMemberQuery(query);
 
-    
   const [deleteNews] = useDeleteTeamMemberMutation();
 
-  const handleDeleteNews = async () => {
+  const handleDeleteTeamMember = async () => {
     try {
       if (DeleteId) {
         const result = await deleteNews(DeleteId).unwrap();
-        toast.success("News item Deleted successfully!");
+        toast.success("Team Member Deleted successfully");
         setDeleteId();
-        if (result.status === "true") {
-          refetch();
+        if (result.status !== "true") {
+          toast.error("Failed to Delete!");
         }
       }
     } catch (err) {
-      toast.error("Failed to update news!");
-
       console.error("delete failed", err);
     }
   };
@@ -74,7 +74,7 @@ const useGetAllTeamMember = () => {
     setShow,
     DeleteId,
     setDeleteId,
-    handleDeleteNews,
+    handleDeleteTeamMember,
     totalCount: TeamMemberData?.pagination?.totalItems || 0,
     totalPages: TeamMemberData?.pagination?.totalPages || 0,
     searchTerm,

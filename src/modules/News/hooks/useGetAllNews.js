@@ -2,7 +2,10 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { toast } from "react-toastify";
-import { useDeleteNewsMutation, useGetAllNewsQuery } from "../../../rtk/newsApi/newsApi";
+import {
+  useDeleteNewsMutation,
+  useGetAllNewsQuery,
+} from "../../../rtk/newsApi/newsApi";
 
 const useGetAllNews = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,22 +29,18 @@ const useGetAllNews = () => {
     refetch,
   } = useGetAllNewsQuery(query);
 
-    
   const [deleteNews] = useDeleteNewsMutation();
 
   const handleDeleteNews = async () => {
     try {
       if (DeleteId) {
-        const result = await deleteNews(DeleteId).unwrap();
+        await deleteNews(DeleteId).unwrap();
         toast.success("News item Deleted successfully!");
         setDeleteId();
-        if (result.status === "true") {
-          refetch();
-        }
+      
       }
     } catch (err) {
-      toast.error("Failed to update news!");
-
+      toast.error("Failed to Delete news item!");
       console.error("delete failed", err);
     }
   };
@@ -63,16 +62,6 @@ const useGetAllNews = () => {
     setSearchParams(searchParams);
   };
 
-  const handleCategoryChange = (categoryId) => {
-    if (categoryId) {
-      searchParams.set("category", categoryId);
-    } else {
-      searchParams.delete("category");
-    }
-    searchParams.set("page", 1);
-    setSearchParams(searchParams);
-  };
-
   return {
     NewsData,
     isLoading,
@@ -90,8 +79,6 @@ const useGetAllNews = () => {
     totalPages: NewsData?.pagination?.totalPages || 0,
     searchTerm,
     handleSearch,
-    selectedCategoryId: categoryFromUrl,
-    handleCategoryChange,
   };
 };
 

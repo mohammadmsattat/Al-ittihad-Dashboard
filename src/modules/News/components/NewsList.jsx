@@ -29,10 +29,8 @@ const NewsList = () => {
     totalPages,
     searchTerm,
     handleSearch,
-    selectedCategoryId,
-    handleCategoryChange,
   } = useGetAllNews();
-console.log(NewsData);
+  console.log(NewsData);
 
   if (isLoading) return <LoadingCard />;
   if (error) return <ErrorMessageCard />;
@@ -122,7 +120,7 @@ console.log(NewsData);
                                 <i className="btn ki-duotone ki-eye text-xl p-0 cursor-pointer"></i>
                               </Tooltip>
                             </Link>
-                            <Link to={`/update-news/${item.slug}`}>
+                            <Link to={`/update-news/${item._id}`}>
                               <Tooltip
                                 title="edit"
                                 placement="top"
@@ -141,7 +139,7 @@ console.log(NewsData);
                               <div
                                 className="relative group cursor-pointer"
                                 onClick={() => {
-                                  setDeleteId(item.slug);
+                                  setDeleteId(item._id);
                                   setShow(true);
                                 }}
                               >

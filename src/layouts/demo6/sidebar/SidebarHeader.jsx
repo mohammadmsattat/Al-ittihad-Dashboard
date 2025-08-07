@@ -52,7 +52,7 @@ const SidebarHeader = forwardRef((props, ref) => {
       <div className="flex items-center gap-2.5 px-3.5 h-[70px]">
         <Link to="/">
           <img
-            src={toAbsoluteUrl("/public/fabicon.png")}
+            src={toAbsoluteUrl("/public/ball-logo.png")}
             alt="Logo"
             className="dark:hidden h-[42px]"
           />
@@ -77,7 +77,7 @@ const SidebarHeader = forwardRef((props, ref) => {
           >
             <MenuLabel className="cursor-pointer text-gray-900 font-medium grow justify-between">
               <span className="text-base font-medium text-gray-900 grow justify-start">
-                News Dashboard
+                Ittihad Dashboard
               </span>
               {/* <MenuArrow>
                 <KeenIcon icon="down" />

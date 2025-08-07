@@ -1,4 +1,3 @@
-import React from "react";
 import { FormattedMessage } from "react-intl";
 import { Container, Tooltip } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -8,7 +7,6 @@ import ErrorMessageCard from "../../../components/Global/ErrorMessageCard";
 import PageSizeSelector from "../../../components/Global/PageSizeSelector";
 import Pagination from "../../../components/Global/Pagination";
 import { ToastContainer } from "react-toastify";
-import FormatTime from "../../../hooks/Global/FormatTime";
 import useGetAllTeam from "../hooks/useAllTeam";
 
 const TeamList = () => {
@@ -54,15 +52,15 @@ const TeamList = () => {
               <FormattedMessage id="Team" />
             </h3>
             <div className="flex gap-6 items-center">
-              <Link to={"/add-news"}>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline btn-primary h-8  flex items-center gap-2 capitalize"
-                >
-                  <i className="ki-outline ki-plus-squared"></i>
-                  Add Team
-                </button>
-              </Link>
+              {/* <Link to={"/add-news"}> */}
+              <button
+                type="button"
+                className="btn btn-sm btn-outline btn-primary h-8  flex items-center gap-2 capitalize"
+              >
+                <i className="ki-outline ki-plus-squared"></i>
+                Add Team
+              </button>
+              {/* </Link> */}
 
               <div className="relative">
                 <i className="ki-outline ki-magnifier leading-none text-md text-gray-500 absolute top-1/2 left-0 -translate-y-1/2 ml-3"></i>
@@ -88,13 +86,14 @@ const TeamList = () => {
                     <tr>
                       <th>#</th>
                       <th className="min-w-[175px]">Image</th>
-                      <th className="min-w-[175px]">Title</th>
-                      <th className="min-w-[125px]">Created At</th>
+                      <th className="min-w-[175px]">Name</th>
+                      <th className="min-w-[175px]">Sport</th>
+                      <th className="min-w-[125px]">team Members</th>
                       <th className="w-[80px]">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {/* {TeamData?.data?.map((item, index) => (
+                    {TeamData?.data?.map((item, index) => (
                       <tr key={item._id}>
                         <td>
                           <span className="badge badge-outline">
@@ -102,12 +101,15 @@ const TeamList = () => {
                           </span>
                         </td>
                         <td>
-                          <img src={item?.photo} />
+                          <img
+                            src={item?.photo}
+                            style={{ width: "6em", height: "4em" }}
+                          />
                         </td>
 
-                        <td>{item.title} </td>
-
-                        <td>{FormatTime(item?.createdAt)}</td>
+                        <td>{item.name} </td>
+                        <td>{item.sport} </td>
+                        <td>{item.teamMember?.length} </td>
 
                         <td>
                           <div className="flex gap-2 items-center">
@@ -135,7 +137,7 @@ const TeamList = () => {
                               <div
                                 className="relative group cursor-pointer"
                                 onClick={() => {
-                                  setDeleteId(item.slug);
+                                  setDeleteId(item._id);
                                   setShow(true);
                                 }}
                               >
@@ -145,7 +147,7 @@ const TeamList = () => {
                           </div>
                         </td>
                       </tr>
-                    ))} */}
+                    ))}
                   </tbody>
                 </table>
 

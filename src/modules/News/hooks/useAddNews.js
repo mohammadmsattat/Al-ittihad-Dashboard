@@ -8,9 +8,12 @@ export const useAddNews = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    title: "",
-    content: "",
-    video: null,
+    title_en: "",
+    title_ar: "",
+    content_en: "",
+    content_ar: "",
+    isVideo: false,
+    videoUrl: "",
   });
 
   const [images, setImages] = useState([]);
@@ -19,14 +22,29 @@ export const useAddNews = () => {
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, type, checked, value } = e.target;
+
+    if (name === "isVideo") {
+      setFormData((prev) => ({
+        ...prev,
+        isVideo: checked,
+        videoUrl: checked ? prev.videoUrl : "",
+      }));
+    } else {
+      const val = type === "checkbox" ? checked : value;
+      setFormData((prev) => ({ ...prev, [name]: val }));
+    }
+
     setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
-  const handleContentChange = (content) => {
-    setFormData((prev) => ({ ...prev, content }));
-    setErrors((prev) => ({ ...prev, content: false }));
+  const handleContentChangeEn = (content_en) => {
+    setFormData((prev) => ({ ...prev, content_en }));
+    setErrors((prev) => ({ ...prev, content_en: false }));
+  };
+  const handleContentChangeAr = (content_ar) => {
+    setFormData((prev) => ({ ...prev, content_ar }));
+    setErrors((prev) => ({ ...prev, content_ar: false }));
   };
 
   const handleVideoChange = (e) => {
@@ -61,8 +79,8 @@ export const useAddNews = () => {
   const validate = () => {
     const newErrors = {};
     if (!formData.title.trim()) newErrors.title = true;
-    if (!formData.content.trim()) newErrors.content = true;
-    if (!formData.video) newErrors.video = true;
+    if (!formData.content_en.trim()) newErrors.content = true;
+    if (!formData.content_ar.trim()) newErrors.content = true;
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -70,20 +88,18 @@ export const useAddNews = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // if (!validate()) return;
+    if (!validate()) return;
 
     const formDataToSend = new FormData();
 
-    // const data = {
-    //   title: formData.title,
-    //   content: formData.content,
-    // };
     formDataToSend.append("title", formData.title);
     formDataToSend.append("content", formData.content);
     console.log(formData.content);
 
-    // formDataToSend.append("video", formData.video);
-
+    formDataToSend.append("isVideo", formData.isVideo); // true / false
+    if (formData.isVideo && formData.videoUrl) {
+      formDataToSend.append("video", formData.videoUrl);
+    }
     images.forEach((image) => formDataToSend.append("images", image));
 
     try {
@@ -105,7 +121,8 @@ export const useAddNews = () => {
   return {
     formData,
     handleChange,
-    handleContentChange,
+    handleContentChangeEn,
+    handleContentChangeAr,
     preview,
     handleVideoChange,
     removeVideo,

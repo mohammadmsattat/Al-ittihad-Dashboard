@@ -24,15 +24,14 @@ const TeamMemberList = () => {
     setShow,
     DeleteId,
     setDeleteId,
-    handleDeleteNews,
+    handleDeleteTeamMember,
     totalCount,
     totalPages,
     searchTerm,
     handleSearch,
-    
   } = useGetAllTeamMember();
   console.log(TeamMemberData);
-  
+
   if (isLoading) return <LoadingCard />;
   if (error) return <ErrorMessageCard />;
 
@@ -55,7 +54,7 @@ const TeamMemberList = () => {
               <FormattedMessage id="Team Member" />
             </h3>
             <div className="flex gap-6 items-center">
-              <Link to={"/add-news"}>
+              <Link to={"/add-teamMember"}>
                 <button
                   type="button"
                   className="btn btn-sm btn-outline btn-primary h-8  flex items-center gap-2 capitalize"
@@ -75,7 +74,6 @@ const TeamMemberList = () => {
                   placeholder="Search..."
                 />
               </div>
-
             </div>
           </div>
 
@@ -90,13 +88,14 @@ const TeamMemberList = () => {
                     <tr>
                       <th>#</th>
                       <th className="min-w-[175px]">Image</th>
-                      <th className="min-w-[175px]">Title</th>
+                      <th className="min-w-[175px]">Name</th>
+                      <th className="min-w-[175px]">Number</th>
                       <th className="min-w-[125px]">Created At</th>
                       <th className="w-[80px]">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {/* {TeamMemberData?.data?.map((item, index) => (
+                    {TeamMemberData?.data?.map((item, index) => (
                       <tr key={item._id}>
                         <td>
                           <span className="badge badge-outline">
@@ -104,10 +103,14 @@ const TeamMemberList = () => {
                           </span>
                         </td>
                         <td>
-                          <img src={item?.photo} />
+                          <img
+                            src={item?.photo}
+                            className="w-[5em] h-[5em] rounded-full"
+                          />
                         </td>
 
-                        <td>{item.title} </td>
+                        <td>{item.name} </td>
+                        <td>{item.number} </td>
 
                         <td>{FormatTime(item?.createdAt)}</td>
 
@@ -137,7 +140,7 @@ const TeamMemberList = () => {
                               <div
                                 className="relative group cursor-pointer"
                                 onClick={() => {
-                                  setDeleteId(item.slug);
+                                  setDeleteId(item._id);
                                   setShow(true);
                                 }}
                               >
@@ -147,7 +150,7 @@ const TeamMemberList = () => {
                           </div>
                         </td>
                       </tr>
-                    ))} */}
+                    ))}
                   </tbody>
                 </table>
 
@@ -171,8 +174,8 @@ const TeamMemberList = () => {
       <DeleteModal
         sh={show}
         onClose={setShow}
-        Delete={handleDeleteNews}
-        title={"Delete News item"}
+        Delete={handleDeleteTeamMember}
+        title={"Delete Team Member"}
         question={"Are you sure you want to delete this item?"}
       />
       <ToastContainer
