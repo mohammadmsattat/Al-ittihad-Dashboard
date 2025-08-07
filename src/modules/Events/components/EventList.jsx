@@ -32,7 +32,7 @@ const EventList = () => {
     selectedCategoryId,
     handleCategoryChange,
   } = AllEventHook();
-console.log(EventData);
+  console.log(EventData);
 
   if (isLoading) return <LoadingCard />;
   if (error) return <ErrorMessageCard />;
@@ -66,8 +66,6 @@ console.log(EventData);
                 </button>
               </Link>
 
-         
-
               <div className="relative">
                 <i className="ki-outline ki-magnifier leading-none text-md text-gray-500 absolute top-1/2 left-0 -translate-y-1/2 ml-3"></i>
                 <input
@@ -95,6 +93,7 @@ console.log(EventData);
                   <thead>
                     <tr>
                       <th>#</th>
+                      <th className="min-w-[100px]">Main Photo</th>
                       <th className="min-w-[175px]">Title</th>
                       <th className="min-w-[125px]">location</th>
                       <th className="min-w-[125px]">Date</th>
@@ -109,7 +108,17 @@ console.log(EventData);
                             {(currentPage - 1) * perPage + index + 1}
                           </span>
                         </td>
-
+                        <td>
+                          {item.photo ? (
+                            <img
+                              src={item.photo}
+                              alt={item.title}
+                              className="w-16 h-10 object-cover rounded"
+                            />
+                          ) : (
+                            <span>No Photo</span>
+                          )}
+                        </td>
                         <td>{item.title} </td>
                         <td>{item.location} </td>
 
@@ -122,7 +131,7 @@ console.log(EventData);
                                 <i className="btn ki-duotone ki-eye text-xl p-0 cursor-pointer"></i>
                               </Tooltip>
                             </Link>
-                            <Link to={`/update-news/${item.slug}`}>
+                            <Link to={`/update-event/${item._id}`}>
                               <Tooltip
                                 title="edit"
                                 placement="top"
@@ -141,7 +150,7 @@ console.log(EventData);
                               <div
                                 className="relative group cursor-pointer"
                                 onClick={() => {
-                                  setDeleteId(item.slug);
+                                  setDeleteId(item._id);
                                   setShow(true);
                                 }}
                               >

@@ -9,13 +9,14 @@ export const AddEventHook = () => {
 
   const [formData, setFormData] = useState({
     title: "",
-    content: "",
+    description: "",
     location: "",
+    date: "",
+    video: "", // ✅ video as a URL string
   });
 
-  const [thumbnail, setThumbnail] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [images, setImages] = useState([]);
+  const [photo, setPhoto] = useState(null); // ✅ main photo
+  const [images, setImages] = useState([]); // ✅ additional images
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
@@ -24,26 +25,20 @@ export const AddEventHook = () => {
     setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
-  const handleContentChange = (content) => {
-    setFormData((prev) => ({ ...prev, content }));
-    setErrors((prev) => ({ ...prev, content: false }));
+  const handleDescriptionChange = (value) => {
+    setFormData((prev) => ({ ...prev, description: value }));
+    setErrors((prev) => ({ ...prev, description: false }));
   };
 
-  const handleThumbnailChange = (e) => {
+  const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setThumbnail(file);
-      setPreview(URL.createObjectURL(file));
-      setErrors((prev) => ({ ...prev, thumbnail: false }));
+      setPhoto(file);
     }
   };
 
-  const removeThumbnail = () => {
-    setThumbnail(null);
-    if (preview) {
-      URL.revokeObjectURL(preview);
-      setPreview(null);
-    }
+  const removePhoto = () => {
+    setPhoto(null);
   };
 
   const handleImagesChange = (e) => {
@@ -58,12 +53,18 @@ export const AddEventHook = () => {
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleVideoChange = (e) => {
+    const { value } = e.target;
+    setFormData((prev) => ({ ...prev, video: value }));
+    setErrors((prev) => ({ ...prev, video: false }));
+  };
+
   const validate = () => {
     const newErrors = {};
     if (!formData.title.trim()) newErrors.title = true;
     if (!formData.location.trim()) newErrors.location = true;
-    if (!formData.content.trim()) newErrors.content = true;
-    if (!thumbnail) newErrors.thumbnail = true;
+    if (!formData.description.trim()) newErrors.description = true;
+    if (!formData.date.trim()) newErrors.date = true;
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -71,29 +72,30 @@ export const AddEventHook = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // if (!validate()) return;
+    if (!validate()) return;
 
     const formDataToSend = new FormData();
     formDataToSend.append("title", formData.title);
-    formDataToSend.append("description", formData.content);
+    formDataToSend.append("description", formData.description);
     formDataToSend.append("location", formData.location);
-    // formDataToSend.append("thumbnail", thumbnail);
-    console.log(images);
+    formDataToSend.append("date", formData.date);
+    formDataToSend.append("video", formData.video); // ✅ as string
 
-    images.forEach((img) => formDataToSend.append("images", img));
-    console.log(formData.location);
+    if (photo) {
+      formDataToSend.append("photo", photo); // ✅ main image
+    }
+
+    images.forEach((img) => {
+      formDataToSend.append("images", img); // ✅ additional images
+    });
 
     try {
       const res = await createEvent(formDataToSend).unwrap();
-      console.log(res);
-      
       toast.success("Event added successfully!");
       setTimeout(() => {
-        navigate("/all-news");
+        navigate("/all-event");
       }, 2000);
     } catch (err) {
-      console.log(err);
-      
       toast.error("Failed to add event.");
       console.error("Create event error:", err);
     }
@@ -102,11 +104,13 @@ export const AddEventHook = () => {
   return {
     formData,
     handleChange,
-    handleContentChange,
-    thumbnail,
-    preview,
-    handleThumbnailChange,
-    removeThumbnail,
+    handleDescriptionChange,
+    date: formData.date,
+    video: formData.video,
+    handleVideoChange,
+    photo,
+    handlePhotoChange,
+    removePhoto,
     images,
     handleImagesChange,
     removeImage,
