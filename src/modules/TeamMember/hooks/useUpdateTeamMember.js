@@ -1,22 +1,33 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useCreateTeamMemberMutation } from "../../../rtk/teamMemberApi/teamMemberApi";
+import {
+  useGetOneTeamMemberQuery,
+  useUpdateTeamMemberMutation,
+} from "../../../rtk/teamMemberApi/teamMemberApi";
 import { useGetAllTeamQuery } from "../../../rtk/teamApi/teamApi";
 
-export const useAddTeamMember = () => {
-  // ✅ جلب كل الفرق لإتاحة الاختيار منها عند إنشاء العضو
-  const {
-    data: TeamData,
-    isLoading: getTeamLoading,
-    error: getTeamError,
-  } = useGetAllTeamQuery();
-  
-
-  const [addTeamMember, { isLoading, error }] = useCreateTeamMemberMutation();
+export const useUpdateTeamMember = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  // ✅ البيانات الأساسية لإنشاء عضو الفريق بناءً على الـ Schema المرسل
+  // ✅ Get existing team member data by ID
+  const {
+    data: memberData,
+    isLoading: isMemberLoading,
+    error: getError,
+  } = useGetOneTeamMemberQuery(id);
+
+  // ✅ Get all teams for the dropdown list
+  const {
+    data: TeamData,
+    isLoading: isTeamLoading,
+    error: getTeamError,
+  } = useGetAllTeamQuery();
+
+  const [updateTeamMember, { isLoading: isUpdating }] = useUpdateTeamMemberMutation();
+
+  // ✅ Form state
   const [formData, setFormData] = useState({
     nameAR: "",
     nameEN: "",
@@ -27,6 +38,7 @@ export const useAddTeamMember = () => {
     ageGroup: "",
     bioAR: "",
     bioEN: "",
+    experience: "",
     stats: {
       appearances: "",
       goals: "",
@@ -36,16 +48,44 @@ export const useAddTeamMember = () => {
     },
   });
 
-  const [thumbnail, setThumbnail] = useState(null); // ✅ صورة العضو
-  const [preview, setPreview] = useState(null); // ✅ عرض معاينة
+  const [thumbnail, setThumbnail] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [errors, setErrors] = useState({});
 
-  const [errors, setErrors] = useState({}); // ✅ لتخزين الأخطاء في النموذج
+  // ✅ Pre-fill form with existing data
+  useEffect(() => {
+    if (memberData?.data) {
+      const m = memberData.data;
+      setFormData({
+        nameAR: m.nameAR || "",
+        nameEN: m.nameEN || "",
+        role: m.role || "",
+        position: m.position || "",
+        number: m.number || "",
+        team: m.team?._id || "",
+        ageGroup: m.ageGroup || "",
+        bioAR: m.bioAR || "",
+        bioEN: m.bioEN || "",
+        experience: m.experience || "",
+        stats: {
+          appearances: m.stats?.appearances || "",
+          goals: m.stats?.goals || "",
+          assists: m.stats?.assists || "",
+          yellowCards: m.stats?.yellowCards || "",
+          redCards: m.stats?.redCards || "",
+        },
+      });
 
-  // ✅ التعامل مع التغييرات في المدخلات
+      if (m.photo) {
+        setPreview(m.photo);
+      }
+    }
+  }, [memberData]);
+
+  // ✅ Input field handler
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // التعامل مع الحقول داخل stats
     if (name in formData.stats) {
       setFormData((prev) => ({
         ...prev,
@@ -55,13 +95,16 @@ export const useAddTeamMember = () => {
         },
       }));
     } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
     }
 
     setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
-  // ✅ التعامل مع رفع الصورة
+  // ✅ Handle photo upload
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -71,35 +114,28 @@ export const useAddTeamMember = () => {
     }
   };
 
-  // ✅ إزالة الصورة المرفوعة
+  // ✅ Remove uploaded photo
   const removeThumbnail = () => {
     setThumbnail(null);
-    if (preview) {
-      URL.revokeObjectURL(preview);
-      setPreview(null);
-    }
+    setPreview(null);
   };
 
-  // ✅ التحقق من صحة المدخلات
+  // ✅ Validation
   const validate = () => {
     const newErrors = {};
     if (!formData.nameAR.trim()) newErrors.nameAR = true;
     if (!formData.nameEN.trim()) newErrors.nameEN = true;
     if (!formData.team) newErrors.team = true;
-    if (!thumbnail) newErrors.thumbnail = true;
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // ✅ إرسال النموذج
+  // ✅ Form submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     const formDataToSend = new FormData();
-
- 
     formDataToSend.append("nameAR", formData.nameAR);
     formDataToSend.append("nameEN", formData.nameEN);
     formDataToSend.append("role", formData.role);
@@ -109,40 +145,40 @@ export const useAddTeamMember = () => {
     formDataToSend.append("ageGroup", formData.ageGroup);
     formDataToSend.append("bioAR", formData.bioAR);
     formDataToSend.append("bioEN", formData.bioEN);
+    formDataToSend.append("experience", formData.experience);
     formDataToSend.append("stats.appearances", formData.stats.appearances);
     formDataToSend.append("stats.goals", formData.stats.goals);
     formDataToSend.append("stats.assists", formData.stats.assists);
     formDataToSend.append("stats.yellowCards", formData.stats.yellowCards);
     formDataToSend.append("stats.redCards", formData.stats.redCards);
 
-    // ✅ إرسال الصورة إذا وُجدت
-    if (thumbnail) formDataToSend.append("photo", thumbnail);
+    if (thumbnail) {
+      formDataToSend.append("photo", thumbnail);
+    }
+console.log(formData.nameEN);
 
     try {
-      await addTeamMember(formDataToSend).unwrap();
-      toast.success("تم حفظ عضو الفريق بنجاح");
-
-      setTimeout(() => {
-        navigate("/all-teamMember"); // ✅ إعادة التوجيه إلى صفحة عرض الأعضاء
-      }, 2000);
+      await updateTeamMember({ id, data: formDataToSend }).unwrap();
+      toast.success("تم تحديث عضو الفريق بنجاح");
+      setTimeout(() => navigate("/all-teamMember"), 2000);
     } catch (err) {
-      toast.error("فشل في إضافة عضو الفريق!");
-      console.error("فشل في الإضافة:", err);
+      console.error("Update error:", err);
+      toast.error("فشل في تحديث عضو الفريق!");
     }
   };
 
   return {
     formData,
     handleChange,
-    preview,
+    handleSubmit,
     handleThumbnailChange,
     removeThumbnail,
-    handleSubmit,
-    isLoading,
-    error,
+    isLoading: isMemberLoading || isTeamLoading || isUpdating,
+    preview,
+    thumbnail,
     errors,
-    TeamData, // ✅ البيانات المطلوبة لعرض الفرق في القائمة المنسدلة
-    getTeamLoading,
+    TeamData,
+    getError,
     getTeamError,
   };
 };

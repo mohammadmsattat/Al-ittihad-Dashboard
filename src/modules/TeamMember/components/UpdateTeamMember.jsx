@@ -1,9 +1,9 @@
 import { Container } from "@mui/material";
 import { ToastContainer } from "react-toastify";
 import { X } from "lucide-react";
-import { useAddTeamMember } from "../hooks/useAddTeamMember";
+import { useUpdateTeamMember } from "../hooks/useUpdateTeamMember";
 
-function AddTeamMember() {
+function UpdateTeamMember() {
   const {
     formData,
     handleChange,
@@ -12,17 +12,17 @@ function AddTeamMember() {
     removeThumbnail,
     handleSubmit,
     isLoading,
-    error,
     errors,
     TeamData,
-  } = useAddTeamMember();
+  } = useUpdateTeamMember();
 
   return (
     <Container maxWidth="md" className="my-12">
       <form onSubmit={handleSubmit} className="space-y-8">
+
         {/* === Profile Photo Upload === */}
         <div className="bg-white p-6 rounded-xl shadow-md">
-          <h2 className="text-lg font-semibold mb-4 text-gray-700">Profile Photo</h2>
+          <h2 className="text-lg font-semibold mb-4 text-gray-700">الصورة الشخصية</h2>
 
           <div className="flex items-center gap-4">
             <div
@@ -33,7 +33,7 @@ function AddTeamMember() {
               {preview ? (
                 <img src={preview} alt="Preview" className="object-cover w-full h-full" />
               ) : (
-                <span className="text-gray-400 text-sm">No Image</span>
+                <span className="text-gray-400 text-sm">لا توجد صورة</span>
               )}
             </div>
 
@@ -43,14 +43,14 @@ function AddTeamMember() {
                 accept="image/*"
                 onChange={handleThumbnailChange}
                 className="block w-full text-sm text-gray-600
-                file:mr-4 file:py-1 file:px-3 file:rounded-full
-                file:border-0 file:text-sm file:font-medium
-                file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
+                  file:mr-4 file:py-1 file:px-3 file:rounded-full
+                  file:border-0 file:text-sm file:font-medium
+                  file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
               />
 
               {preview && (
                 <div className="flex justify-between items-center mt-2 bg-gray-100 p-2 border rounded">
-                  <span className="text-sm text-gray-600 truncate max-w-[80%]">Image Selected</span>
+                  <span className="text-sm text-gray-600 truncate max-w-[80%]">تم اختيار صورة</span>
                   <button type="button" onClick={removeThumbnail}>
                     <X className="w-4 h-4 text-red-500" />
                   </button>
@@ -62,7 +62,7 @@ function AddTeamMember() {
 
         {/* === Team Member Details === */}
         <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
-          <h2 className="text-lg font-semibold text-gray-700">Team Member Details</h2>
+          <h2 className="text-lg font-semibold text-gray-700">معلومات العضو</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <InputField label="الاسم (عربي)" name="nameAR" value={formData.nameAR} error={errors.nameAR} onChange={handleChange} />
@@ -82,7 +82,7 @@ function AddTeamMember() {
                 onChange={handleChange}
                 className={`input ${errors.team ? "border-red-500 border" : ""}`}
               >
-                <option value="">Select Team</option>
+                <option value="">Choose Team</option>
                 {TeamData?.data?.map((team) => (
                   <option key={team._id} value={team._id}>
                     {team.nameEN}
@@ -117,7 +117,7 @@ function AddTeamMember() {
             disabled={isLoading}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg disabled:opacity-50"
           >
-            {isLoading ? "Saving" : "Save"}
+            {isLoading ? "Saving" : "Update Team Member"}
           </button>
         </div>
       </form>
@@ -151,9 +151,10 @@ function TextAreaField({ label, name, value, onChange }) {
         value={value}
         onChange={onChange}
         className="textarea"
+        rows={4}
       />
     </div>
   );
 }
 
-export default AddTeamMember;
+export default UpdateTeamMember;

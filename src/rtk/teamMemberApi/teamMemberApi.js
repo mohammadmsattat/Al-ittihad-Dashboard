@@ -38,10 +38,10 @@ export const TeamMemberApi = createApi({
     }),
 
     updateTeamMember: builder.mutation({
-      query: ({ id, patch }) => ({
+      query: ({ id, data }) => ({
         url: `${TeamMemberEndPoint}/${id}`,
         method: "PUT",
-        body: patch,
+        body: data,
       }),
       invalidatesTags: ["TeamMember"],
     }),
