@@ -1,88 +1,121 @@
-import { useEffect, useState } from "react";
-import { useCreateAuthorMutation } from "../../../rtk/teamApi/teamApi";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useCreateTeamMutation } from "../../../rtk/teamApi/teamApi";
 
-const AddAuthorHook = (sh, onClose) => {
-  const [createAuthor, { isLoading }] = useCreateAuthorMutation();
+const useAddTeam = () => {
+  const [createTeam, { isLoading, error }] = useCreateTeamMutation();
+  const navigate = useNavigate();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState("author");
-
-  const [inputErrors, setInputErrors] = useState({
-    name: false,
-    email: false,
-    role: false,
+  // ✅ بيانات الفريق الأساسية
+  const [formData, setFormData] = useState({
+    nameAR: "",
+    nameEN: "",
+    sport: "",
+    stats: {
+      wins: "",
+      losses: "",
+      draws: "",
+    },
   });
 
-  const [show, setShow] = useState(false);
+  const [thumbnail, setThumbnail] = useState(null); // ✅ صورة الفريق
+  const [preview, setPreview] = useState(null); // ✅ معاينة للصورة
 
-  useEffect(() => {
-    if (sh) {
-      setShow(true);
+  const [errors, setErrors] = useState({}); // ✅ لتخزين الأخطاء في النموذج
+
+  // ✅ التعامل مع تغييرات الحقول
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    // التعامل مع الحقول داخل stats
+    if (["wins", "losses", "draws"].includes(name)) {
+      setFormData((prev) => ({
+        ...prev,
+        stats: {
+          ...prev.stats,
+          [name]: value,
+        },
+      }));
     } else {
-      resetForm();
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
-  }, [sh]);
 
-  const resetForm = () => {
-    setName("");
-    setEmail("");
-    setRole("author");
-    setInputErrors({
-      name: false,
-      email: false,
-      role: false,
-    });
-    setShow(false);
+    setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
-  const handleSave = async () => {
-    console.log("handleSave called with:", { name, email, role });
-
-    const errors = {
-      name: !name.trim(),
-      email: !email.trim(),
-      role: !role.trim(),
-    };
-
-    setInputErrors(errors);
-    if (Object.values(errors).some(Boolean)) {
-      console.log("Validation errors:", errors);
-      return;
+  // ✅ رفع صورة الفريق
+  const handleThumbnailChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setThumbnail(file);
+      setPreview(URL.createObjectURL(file));
+      setErrors((prev) => ({ ...prev, photo: false }));
     }
+  };
 
-    const formData = { name, email, role };
-    console.log("Submitting form data:", formData);
+  // ✅ إزالة الصورة المرفوعة
+  const removeThumbnail = () => {
+    setThumbnail(null);
+    if (preview) {
+      URL.revokeObjectURL(preview);
+      setPreview(null);
+    }
+  };
+
+  // ✅ التحقق من صحة الحقول
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.nameAR.trim()) newErrors.nameAR = true;
+    if (!formData.nameEN.trim()) newErrors.nameEN = true;
+    if (!formData.sport.trim()) newErrors.sport = true;
+    if (!thumbnail) newErrors.photo = true;
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // ✅ إرسال النموذج
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    const formDataToSend = new FormData();
+
+    formDataToSend.append("nameAR", formData.nameAR);
+    formDataToSend.append("nameEN", formData.nameEN);
+    formDataToSend.append("sport", formData.sport);
+
+    formDataToSend.append("stats.wins", formData.stats.wins);
+    formDataToSend.append("stats.losses", formData.stats.losses);
+    formDataToSend.append("stats.draws", formData.stats.draws);
+
+    if (thumbnail) formDataToSend.append("photo", thumbnail);
 
     try {
-      const res = await createAuthor(formData).unwrap();
-      if (res) toast.success("Author Saved successfully!");
+      await createTeam(formDataToSend).unwrap();
+      toast.success("تم حفظ الفريق بنجاح");
 
-      console.log("Author created successfully");
-      resetForm();
-      onClose(false);
+      setTimeout(() => {
+        navigate("/all-team");
+      }, 2000);
     } catch (err) {
-      if (err.status === 403)
-        toast.error("you have no access for this Validity");
-
-      console.error("Error adding author:", err);
+      toast.error("فشل في إضافة الفريق!");
+      console.error("فشل في إضافة الفريق:", err);
     }
   };
 
   return {
-    name,
-    setName,
-    email,
-    setEmail,
-    role,
-    setRole,
-    inputErrors,
-    show,
-    resetForm,
-    handleSave,
+    formData,
+    handleChange,
+    preview,
+    handleThumbnailChange,
+    removeThumbnail,
+    handleSubmit,
     isLoading,
+    error,
+    errors,
   };
 };
 
-export default AddAuthorHook;
+export default useAddTeam;

@@ -1,90 +1,145 @@
 import { useEffect, useState } from "react";
-import { useUpdateAuthorMutation } from "../../../rtk/teamApi/teamApi";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import {
+  useGetOneTeamQuery,
+  useUpdateTeamMutation,
+} from "../../../rtk/teamApi/teamApi";
 
-const UpdateAuthorHook = (sh, onClose, author) => {
-  const [updateAuthor, { isLoading }] = useUpdateAuthorMutation();
+const useUpdateTeam = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  const [name, setName] = useState(author?.name || "");
-  const [email, setEmail] = useState(author?.email || "");
-  const [role, setRole] = useState(author?.role || "author");
+  const {
+    data: teamData,
+    isLoading: isTeamLoading,
+    error: getTeamError,
+  } = useGetOneTeamQuery(id);
 
-  const [inputErrors, setInputErrors] = useState({
-    name: false,
-    email: false,
-    role: false,
+  const [updateTeam, { isLoading: isUpdating }] = useUpdateTeamMutation();
+
+  const [formData, setFormData] = useState({
+    nameAR: "",
+    nameEN: "",
+    sport: "",
+    stats: {
+      wins: "",
+      losses: "",
+      draws: "",
+    },
   });
 
-  const [show, setShow] = useState(false);
+  const [thumbnail, setThumbnail] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [errors, setErrors] = useState({});
 
+  // ✅ Prefill team data
   useEffect(() => {
-    if (sh) {
-      setShow(true);
-      setName(author?.name || "");
-      setEmail(author?.email || "");
-      setRole(author?.role || "author");
-    } else {
-      resetForm();
-    }
-  }, [sh, author]);
+    if (teamData?.data) {
+      const t = teamData.data;
+      setFormData({
+        nameAR: t.nameAR || "",
+        nameEN: t.nameEN || "",
+        sport: t.sport || "",
+        stats: {
+          wins: t.stats?.wins ?? "",
+          losses: t.stats?.losses ?? "",
+          draws: t.stats?.draws ?? "",
+        },
+      });
 
-  const resetForm = () => {
-    setName("");
-    setEmail("");
-    setRole("author");
-    setInputErrors({
-      name: false,
-      email: false,
-      role: false,
-    });
-    setShow(false);
+      if (t.photo) {
+        setPreview(t.photo);
+      }
+    }
+  }, [teamData]);
+
+  // ✅ Handle input change
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (["wins", "losses", "draws"].includes(name)) {
+      setFormData((prev) => ({
+        ...prev,
+        stats: {
+          ...prev.stats,
+          [name]: value,
+        },
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+
+    setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
-  const handleUpdate = async () => {
-    const errors = {
-      name: !name.trim(),
-      email: !email.trim(),
-      role: !role.trim(),
-    };
+  // ✅ Handle image upload
+  const handleThumbnailChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setThumbnail(file);
+      setPreview(URL.createObjectURL(file));
+      setErrors((prev) => ({ ...prev, photo: false }));
+    }
+  };
 
-    setInputErrors(errors);
-    if (Object.values(errors).some(Boolean)) return;
+  const removeThumbnail = () => {
+    setThumbnail(null);
+    setPreview(null);
+  };
 
-    const formData = {
-      name,
-      email,
-      role,
-    };
+  // ✅ Validate required fields
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.nameAR.trim()) newErrors.nameAR = true;
+    if (!formData.nameEN.trim()) newErrors.nameEN = true;
+    if (!formData.sport.trim()) newErrors.sport = true;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // ✅ Submit form
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    const formDataToSend = new FormData();
+    formDataToSend.append("nameAR", formData.nameAR);
+    formDataToSend.append("nameEN", formData.nameEN);
+    formDataToSend.append("sport", formData.sport);
+    formDataToSend.append("stats.wins", formData.stats.wins);
+    formDataToSend.append("stats.losses", formData.stats.losses);
+    formDataToSend.append("stats.draws", formData.stats.draws);
+
+    if (thumbnail) {
+      formDataToSend.append("photo", thumbnail);
+    }
 
     try {
-      const res = await updateAuthor({
-        id: author._id,
-        patch: formData,
-      }).unwrap();
-      if (res) toast.success("Author Updated successfully!");
-
-      resetForm();
-      onClose(false);
+      await updateTeam({ id, data: formDataToSend }).unwrap();
+      toast.success("Team updated successfully!");
+      setTimeout(() => navigate("/all-team"), 2000);
     } catch (err) {
-      if (err.status === 403)
-        toast.error("You Have No Access For This Vlidity");
-      console.error("Error updating author:", err);
+      console.error("Update failed:", err);
+      toast.error("Failed to update the team.");
     }
   };
 
   return {
-    name,
-    setName,
-    email,
-    setEmail,
-    role,
-    setRole,
-    inputErrors,
-    show,
-    handleUpdate,
-    isLoading,
-    resetForm,
+    formData,
+    handleChange,
+    handleSubmit,
+    handleThumbnailChange,
+    removeThumbnail,
+    isLoading: isTeamLoading || isUpdating,
+    preview,
+    thumbnail,
+    errors,
+    getTeamError,
   };
 };
 
-export default UpdateAuthorHook;
+export default useUpdateTeam;
