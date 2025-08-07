@@ -8,7 +8,6 @@ const AllEventHook = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const pageFromUrl = parseInt(searchParams.get("page")) || 1;
   const limitFromUrl = parseInt(searchParams.get("limit")) || 10;
-  const categoryFromUrl = searchParams.get("category") || "";
 
   const [show, setShow] = useState(false);
   const [DeleteId, setDeleteId] = useState();
@@ -17,7 +16,7 @@ const AllEventHook = () => {
 
   const query = `page=${pageFromUrl}&limit=${limitFromUrl}${
     searchTerm.trim() ? `&keyword=${searchTerm.trim()}` : ""
-  }${categoryFromUrl ? `&category=${categoryFromUrl}` : ""}`;
+  }`;
 
   const {
     data: EventData,
@@ -40,8 +39,6 @@ const AllEventHook = () => {
         }
       }
     } catch (err) {
-      toast.error("Failed to update news!");
-
       console.error("delete failed", err);
     }
   };
@@ -63,15 +60,6 @@ const AllEventHook = () => {
     setSearchParams(searchParams);
   };
 
-  const handleCategoryChange = (categoryId) => {
-    if (categoryId) {
-      searchParams.set("category", categoryId);
-    } else {
-      searchParams.delete("category");
-    }
-    searchParams.set("page", 1);
-    setSearchParams(searchParams);
-  };
 
   return {
     EventData,
@@ -90,8 +78,7 @@ const AllEventHook = () => {
     totalPages: EventData?.pagination?.totalPages || 0,
     searchTerm,
     handleSearch,
-    selectedCategoryId: categoryFromUrl,
-    handleCategoryChange,
+ 
   };
 };
 

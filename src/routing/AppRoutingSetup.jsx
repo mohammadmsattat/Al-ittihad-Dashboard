@@ -14,8 +14,6 @@ import TeamMemberList from "../modules/TeamMember/components/TeamMemberList";
 import TeamList from "../modules/Team/components/TeamList";
 import AddNews from "../modules/News/components/AddNewsItem";
 import AddEvent from "../modules/Events/components/AddEvent";
-import UpdateNews from "../modules/News/components/UpdateNewsItem";
-import AddTeamMember from "../modules/TeamMember/components/AddTeamMember";
 
 //dashboard
 
@@ -27,7 +25,6 @@ const AppRoutingSetup = () => {
         <Route path="/" element={<DefaultPage />} />
         <Route path="/all-news" element={<NewsList />} />
         <Route path="/add-news" element={<AddNews />} />
-        <Route path="/update-news/:id" element={<UpdateNews />} />
         <Route path="/all-contact" element={<ContactList />} />
         <Route path="/all-matches" element={<MatchList />} />
         <Route path="/all-team" element={<TeamList />} />
