@@ -38,10 +38,10 @@ export const MembershipApi = createApi({
     }),
 
     updateMembership: builder.mutation({
-      query: ({ id, patch }) => ({
+      query: ({ id, data }) => ({
         url: `${MembershipEndPoint}/${id}`,
         method: "PUT",
-        body: patch,
+        body: data,
       }),
       invalidatesTags: ["Membership"],
     }),

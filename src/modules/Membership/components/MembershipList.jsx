@@ -8,8 +8,7 @@ import ErrorMessageCard from "../../../components/Global/ErrorMessageCard";
 import PageSizeSelector from "../../../components/Global/PageSizeSelector";
 import Pagination from "../../../components/Global/Pagination";
 import { ToastContainer } from "react-toastify";
-import FormatTime from "../../../hooks/Global/FormatTime";
-import useGetAllMembership from "../hooks/useGetAllMemberShip";
+import useGetAllMembership from "../hooks/useAllMembership";
 
 const MembershipList = () => {
   const {
@@ -24,21 +23,18 @@ const MembershipList = () => {
     setShow,
     DeleteId,
     setDeleteId,
-    handleDeleteNews,
-    totalCount,
+    handleDeleteMembership,
     totalPages,
     searchTerm,
     handleSearch,
-    
   } = useGetAllMembership();
-  console.log(MembershipData);
-  
+
   if (isLoading) return <LoadingCard />;
   if (error) return <ErrorMessageCard />;
 
   const onPageChange = (page) => {
     if (page < 1) page = 1;
-    else if (page > totalCount) page = totalCount;
+    else if (page > totalPages) page = totalPages;
     setCurrentPage(page);
   };
 
@@ -52,16 +48,16 @@ const MembershipList = () => {
         <div className="card card-grid min-w-full">
           <div className="card-header py-5 flex-wrap">
             <h3 className="card-title">
-              <FormattedMessage id="MemberShip" />
+              <FormattedMessage id="Memberships" defaultMessage="Memberships" />
             </h3>
             <div className="flex gap-6 items-center">
-              <Link to={"/add-news"}>
+              <Link to={"/add-membership"}>
                 <button
                   type="button"
-                  className="btn btn-sm btn-outline btn-primary h-8  flex items-center gap-2 capitalize"
+                  className="btn btn-sm btn-outline btn-primary h-8 flex items-center gap-2 capitalize"
                 >
                   <i className="ki-outline ki-plus-squared"></i>
-                  Add Member Ship
+                  Add Membership
                 </button>
               </Link>
 
@@ -75,7 +71,6 @@ const MembershipList = () => {
                   placeholder="Search..."
                 />
               </div>
-
             </div>
           </div>
 
@@ -89,38 +84,30 @@ const MembershipList = () => {
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th className="min-w-[175px]">Image</th>
-                      <th className="min-w-[175px]">Title</th>
-                      <th className="min-w-[125px]">Created At</th>
+                      <th>Type</th>
+                      <th>Benefits</th>
+                      <th>Price</th>
+                      <th>Duration</th>
                       <th className="w-[80px]">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {/* {MembershipData?.data?.map((item, index) => (
+                    {MembershipData?.data?.map((item, index) => (
                       <tr key={item._id}>
                         <td>
                           <span className="badge badge-outline">
                             {(currentPage - 1) * perPage + index + 1}
                           </span>
                         </td>
-                        <td>
-                          <img src={item?.photo} />
-                        </td>
-
-                        <td>{item.title} </td>
-
-                        <td>{FormatTime(item?.createdAt)}</td>
-
+                        <td>{item.type}</td>
+                        <td>{item.benefits}</td>
+                        <td>${item.price}</td>
+                        <td>{item.duration}</td>
                         <td>
                           <div className="flex gap-2 items-center">
-                            <Link to={`/news-detailes/${item.slug}`}>
-                              <Tooltip placement="top" disableInteractive>
-                                <i className="btn ki-duotone ki-eye text-xl p-0 cursor-pointer"></i>
-                              </Tooltip>
-                            </Link>
-                            <Link to={`/update-news/${item.slug}`}>
+                            <Link to={`/update-membership/${item._id}`}>
                               <Tooltip
-                                title="edit"
+                                title="Edit"
                                 placement="top"
                                 disableInteractive
                               >
@@ -130,24 +117,24 @@ const MembershipList = () => {
                               </Tooltip>
                             </Link>
                             <Tooltip
-                              title="delete"
+                              title="Delete"
                               placement="top"
                               disableInteractive
                             >
                               <div
                                 className="relative group cursor-pointer"
                                 onClick={() => {
-                                  setDeleteId(item.slug);
+                                  setDeleteId(item._id);
                                   setShow(true);
                                 }}
                               >
-                                <i className="ki-filled ki-trash text-xl text-red-500 text-xl" />
+                                <i className="ki-filled ki-trash text-xl text-red-500" />
                               </div>
                             </Tooltip>
                           </div>
                         </td>
                       </tr>
-                    ))} */}
+                    ))}
                   </tbody>
                 </table>
 
@@ -171,10 +158,11 @@ const MembershipList = () => {
       <DeleteModal
         sh={show}
         onClose={setShow}
-        Delete={handleDeleteNews}
-        title={"Delete News item"}
-        question={"Are you sure you want to delete this item?"}
+        Delete={handleDeleteMembership}
+        title={"Delete Membership"}
+        question={"Are you sure you want to delete this membership?"}
       />
+
       <ToastContainer
         position="top-right"
         autoClose={2000}

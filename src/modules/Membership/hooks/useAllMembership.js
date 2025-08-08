@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-
 import { toast } from "react-toastify";
-import { useDeleteMembershipMutation, useGetAllMembershipQuery } from "../../../rtk/membershipApi/membershipApi";
+import {
+  useDeleteMembershipMutation,
+  useGetAllMembershipQuery,
+} from "../../../rtk/membershipApi/membershipApi";
 
 const useGetAllMembership = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -25,22 +27,20 @@ const useGetAllMembership = () => {
     refetch,
   } = useGetAllMembershipQuery(query);
 
-    
-  const [deleteNews] = useDeleteMembershipMutation();
+  const [deleteMembership] = useDeleteMembershipMutation();
 
-  const handleDeleteNews = async () => {
+  const handleDeleteMembership = async () => {
     try {
       if (DeleteId) {
-        const result = await deleteNews(DeleteId).unwrap();
-        toast.success("News item Deleted successfully!");
+        const result = await deleteMembership(DeleteId).unwrap();
+        toast.success("تم حذف العضوية بنجاح!");
         setDeleteId();
         if (result.status === "true") {
           refetch();
         }
       }
     } catch (err) {
-      toast.error("Failed to update news!");
-
+      toast.error("فشل في حذف العضوية!");
       console.error("delete failed", err);
     }
   };
@@ -74,7 +74,7 @@ const useGetAllMembership = () => {
     setShow,
     DeleteId,
     setDeleteId,
-    handleDeleteNews,
+    handleDeleteMembership, 
     totalCount: MembershipData?.pagination?.totalItems || 0,
     totalPages: MembershipData?.pagination?.totalPages || 0,
     searchTerm,
