@@ -38,10 +38,10 @@ export const InvsetmentApi = createApi({
     }),
 
     updateInvestment: builder.mutation({
-      query: ({ id, patch }) => ({
+      query: ({ id, data }) => ({
         url: `${InvestmentEndPoint}/${id}`,
         method: "PUT",
-        body: patch,
+        body: data,
       }),
       invalidatesTags: ["Investment"],
     }),

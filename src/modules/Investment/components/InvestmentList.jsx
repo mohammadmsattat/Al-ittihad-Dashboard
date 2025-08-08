@@ -9,11 +9,11 @@ import PageSizeSelector from "../../../components/Global/PageSizeSelector";
 import Pagination from "../../../components/Global/Pagination";
 import { ToastContainer } from "react-toastify";
 import FormatTime from "../../../hooks/Global/FormatTime";
-import useGetAllInvestment from "../hooks/useGetAllInvestment";
+import useGetAllInvestment from "../hooks/useAllInvestment";
 
 const InvestmentList = () => {
   const {
-    InvestmentData,
+    investmentData,
     isLoading,
     error,
     currentPage,
@@ -22,15 +22,14 @@ const InvestmentList = () => {
     setPerPage,
     show,
     setShow,
-    DeleteId,
+    deleteId,
     setDeleteId,
-    handleDeleteNews,
+    handleDeleteInvestment,
     totalCount,
     totalPages,
     searchTerm,
     handleSearch,
   } = useGetAllInvestment();
-  console.log(InvestmentData);
 
   if (isLoading) return <LoadingCard />;
   if (error) return <ErrorMessageCard />;
@@ -54,10 +53,10 @@ const InvestmentList = () => {
               <FormattedMessage id="Investment" />
             </h3>
             <div className="flex gap-6 items-center">
-              <Link to={"/add-news"}>
+              <Link to={"/add-investment"}>
                 <button
                   type="button"
-                  className="btn btn-sm btn-outline btn-primary h-8  flex items-center gap-2 capitalize"
+                  className="btn btn-sm btn-outline btn-primary h-8 flex items-center gap-2 capitalize"
                 >
                   <i className="ki-outline ki-plus-squared"></i>
                   Add Investment
@@ -80,80 +79,63 @@ const InvestmentList = () => {
           <div className="card-body">
             <div data-datatable="true" data-datatable-page-size="5">
               <div className="scrollable-x-auto">
-                <table
-                  className="table table-auto table-border"
-                  id="grid_table"
-                >
+                <table className="table table-auto table-border" id="grid_table">
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th className="min-w-[175px]">Image</th>
-                      <th className="min-w-[175px]">Title</th>
-                      <th className="min-w-[125px]">Created At</th>
+                      <th className="min-w-[175px]">Title (AR)</th>
+                      <th className="min-w-[175px]">Title (EN)</th>
+                      <th className="min-w-[150px]">Deadline</th>
+                      <th className="min-w-[100px]">Status</th>
                       <th className="w-[80px]">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {/* {InvestmentData?.data?.map((item, index) => (
+                    {investmentData?.data?.map((item, index) => (
                       <tr key={item._id}>
                         <td>
                           <span className="badge badge-outline">
                             {(currentPage - 1) * perPage + index + 1}
                           </span>
                         </td>
-                        <td>
-                          <img src={item?.photo} />
-                        </td>
-
-                        <td>{item.title} </td>
-
-                        <td>{FormatTime(item?.createdAt)}</td>
-
+                        <td>{item.titleAR}</td>
+                        <td>{item.titleEN}</td>
+                        <td>{item.deadline ? FormatTime(item.deadline) : "-"}</td>
+                        <td>{item.status || "-"}</td>
                         <td>
                           <div className="flex gap-2 items-center">
-                            <Link to={`/news-detailes/${item.slug}`}>
+                            <Link to={`/investment-details/${item._id}`}>
                               <Tooltip placement="top" disableInteractive>
                                 <i className="btn ki-duotone ki-eye text-xl p-0 cursor-pointer"></i>
                               </Tooltip>
                             </Link>
-                            <Link to={`/update-news/${item.slug}`}>
-                              <Tooltip
-                                title="edit"
-                                placement="top"
-                                disableInteractive
-                              >
+                            <Link to={`/update-investment/${item._id}`}>
+                              <Tooltip title="edit" placement="top" disableInteractive>
                                 <button className="cursor-pointer">
                                   <i className="ki-filled ki-notepad-edit text-xl" />
                                 </button>
                               </Tooltip>
                             </Link>
-                            <Tooltip
-                              title="delete"
-                              placement="top"
-                              disableInteractive
-                            >
+                            <Tooltip title="delete" placement="top" disableInteractive>
                               <div
                                 className="relative group cursor-pointer"
                                 onClick={() => {
-                                  setDeleteId(item.slug);
+                                  setDeleteId(item._id);
                                   setShow(true);
                                 }}
                               >
-                                <i className="ki-filled ki-trash text-xl text-red-500 text-xl" />
+                                <i className="ki-filled ki-trash text-xl text-red-500" />
                               </div>
                             </Tooltip>
                           </div>
                         </td>
                       </tr>
-                    ))} */}
+                    ))}
                   </tbody>
                 </table>
 
                 <div className="card-footer flex justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
-                  <PageSizeSelector
-                    perPage={perPage}
-                    setPerPage={onPerPageChange}
-                  />
+                  <PageSizeSelector perPage={perPage} setPerPage={onPerPageChange} />
                   <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
@@ -169,9 +151,9 @@ const InvestmentList = () => {
       <DeleteModal
         sh={show}
         onClose={setShow}
-        Delete={handleDeleteNews}
-        title={"Delete News item"}
-        question={"Are you sure you want to delete this item?"}
+        Delete={handleDeleteInvestment}
+        title={"Delete Investment"}
+        question={"Are you sure you want to delete this investment?"}
       />
       <ToastContainer
         position="top-right"
