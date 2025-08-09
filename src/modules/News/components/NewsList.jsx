@@ -115,7 +115,7 @@ const NewsList = () => {
 
                         <td>
                           <div className="flex gap-2 items-center">
-                            <Link to={`/news-detailes/${item.slug}`}>
+                            <Link to={`/news-details/${item._id}`}>
                               <Tooltip placement="top" disableInteractive>
                                 <i className="btn ki-duotone ki-eye text-xl p-0 cursor-pointer"></i>
                               </Tooltip>
