@@ -17,6 +17,7 @@ const AllEventHook = () => {
   const query = `page=${pageFromUrl}&limit=${limitFromUrl}${
     searchTerm.trim() ? `&keyword=${searchTerm.trim()}` : ""
   }`;
+console.log(query);
 
   const {
     data: EventData,
@@ -32,7 +33,7 @@ const AllEventHook = () => {
     try {
       if (DeleteId) {
         const result = await deleteNews(DeleteId).unwrap();
-        toast.success("News item Deleted successfully!");
+        toast.success("Event Deleted successfully!");
         setDeleteId();
         if (result.status === "true") {
           refetch();

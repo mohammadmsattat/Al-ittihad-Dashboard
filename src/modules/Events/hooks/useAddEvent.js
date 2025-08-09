@@ -8,15 +8,18 @@ export const AddEventHook = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    location: "",
+    title_en: "",
+    title_ar: "",
+    description_en: "",
+    description_ar: "",
+    location_en: "",
+    location_ar: "",
     date: "",
-    video: "", // ✅ video as a URL string
+    video: "",
   });
 
-  const [photo, setPhoto] = useState(null); // ✅ main photo
-  const [images, setImages] = useState([]); // ✅ additional images
+  const [photo, setPhoto] = useState(null);
+  const [images, setImages] = useState([]);
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
@@ -25,11 +28,14 @@ export const AddEventHook = () => {
     setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
-  const handleDescriptionChange = (value) => {
-    setFormData((prev) => ({ ...prev, description: value }));
-    setErrors((prev) => ({ ...prev, description: false }));
+  const handleDescriptionChangeAR = (value) => {
+    setFormData((prev) => ({ ...prev, description_ar: value }));
+    setErrors((prev) => ({ ...prev, description_ar: false }));
   };
-
+  const handleDescriptionChangeEN = (value) => {
+    setFormData((prev) => ({ ...prev, description_en: value }));
+    setErrors((prev) => ({ ...prev, description_en: false }));
+  };
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -58,16 +64,57 @@ export const AddEventHook = () => {
     setFormData((prev) => ({ ...prev, video: value }));
     setErrors((prev) => ({ ...prev, video: false }));
   };
-
   const validate = () => {
     const newErrors = {};
-    if (!formData.title.trim()) newErrors.title = true;
-    if (!formData.location.trim()) newErrors.location = true;
-    if (!formData.description.trim()) newErrors.description = true;
-    if (!formData.date.trim()) newErrors.date = true;
+    let firstEmptyFieldName = "";
+
+    if (!formData.title_en.trim()) {
+      newErrors.title_en = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Title (English)";
+    }
+
+    if (!formData.title_ar.trim()) {
+      newErrors.title_ar = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Title (Arabic)";
+    }
+
+    if (!formData.location_en.trim()) {
+      newErrors.location_en = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Location (English)";
+    }
+
+    if (!formData.location_ar.trim()) {
+      newErrors.location_ar = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Location (Arabic)";
+    }
+    if (!photo) {
+      newErrors.photo = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Main Image";
+    }
+
+    if (!formData.description_en.trim()) {
+      newErrors.description_en = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Description (English)";
+    }
+
+    if (!formData.description_ar.trim()) {
+      newErrors.description_ar = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Description (Arabic)";
+    }
+
+    if (!formData.date.trim()) {
+      newErrors.date = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Date";
+    }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    if (Object.keys(newErrors).length > 0) {
+      toast.error(`Please fill the field: ${firstEmptyFieldName}`);
+      return false;
+    }
+
+    return true;
   };
 
   const handleSubmit = async (e) => {
@@ -75,18 +122,21 @@ export const AddEventHook = () => {
     if (!validate()) return;
 
     const formDataToSend = new FormData();
-    formDataToSend.append("title", formData.title);
-    formDataToSend.append("description", formData.description);
-    formDataToSend.append("location", formData.location);
+    formDataToSend.append("titleEN", formData.title_en);
+    formDataToSend.append("titleAR", formData.title_ar);
+    formDataToSend.append("descriptionEN", formData.description_en);
+    formDataToSend.append("descriptionAR", formData.description_ar);
+    formDataToSend.append("locationEN", formData.location_en);
+    formDataToSend.append("locationAR", formData.location_ar);
     formDataToSend.append("date", formData.date);
-    formDataToSend.append("video", formData.video); // ✅ as string
+    formDataToSend.append("video", formData.video);
 
     if (photo) {
-      formDataToSend.append("photo", photo); // ✅ main image
+      formDataToSend.append("photo", photo);
     }
 
     images.forEach((img) => {
-      formDataToSend.append("images", img); // ✅ additional images
+      formDataToSend.append("images", img);
     });
 
     try {
@@ -104,7 +154,8 @@ export const AddEventHook = () => {
   return {
     formData,
     handleChange,
-    handleDescriptionChange,
+    handleDescriptionChangeAR,
+    handleDescriptionChangeEN,
     date: formData.date,
     video: formData.video,
     handleVideoChange,

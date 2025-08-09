@@ -8,7 +8,8 @@ function AddEvent() {
   const {
     formData,
     handleChange,
-    handleDescriptionChange,
+    handleDescriptionChangeAR,
+    handleDescriptionChangeEN,
     date,
     images,
     handleImagesChange,
@@ -33,34 +34,59 @@ function AddEvent() {
           </h2>
 
           {/* Title */}
-          <div className="input-group">
-            <label className="btn btn-input w-[7em]">Title</label>
-            <input
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="Add Title ..."
-              type="text"
-              className={`input ${errors.title ? "border-red-500 border" : ""}`}
-            />
+          <div className="grid grid-cols-2 gap-5">
+            <div className="input-group">
+              <label className="btn btn-input w-[9em]">Title-en</label>
+              <input
+                name="title_en"
+                value={formData.title_en}
+                onChange={handleChange}
+                placeholder="Enter The English Title ..."
+                type="text"
+                className={`input ${errors.title_en ? "border-red-500 border" : ""}`}
+              />
+            </div>
+            <div className="input-group">
+              <label className="btn btn-input w-[9em]">Title-ar</label>
+              <input
+                name="title_ar"
+                value={formData.title_ar}
+                onChange={handleChange}
+                placeholder="Enter The Arabic Title ..."
+                type="text"
+                className={`input ${errors.title_ar ? "border-red-500 border" : ""}`}
+              />
+            </div>
           </div>
-
           {/* Location */}
-          <div className="input-group">
-            <label className="btn btn-input w-[7em]">Location</label>
-            <input
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              placeholder="Add location ..."
-              type="text"
-              className={`input ${errors.location ? "border-red-500 border" : ""}`}
-            />
+          <div className="grid grid-cols-2 gap-5">
+            <div className="input-group">
+              <label className="btn btn-input w-[9em]">Location-en</label>
+              <input
+                name="location_en"
+                value={formData.location_en}
+                onChange={handleChange}
+                placeholder="Enter The English location ..."
+                type="text"
+                className={`input ${errors.location_en ? "border-red-500 border" : ""}`}
+              />
+            </div>
+            <div className="input-group">
+              <label className="btn btn-input w-[9em]">Location-ar</label>
+              <input
+                name="location_ar"
+                value={formData.location_ar}
+                onChange={handleChange}
+                placeholder="Enter The Arabic location ..."
+                type="text"
+                className={`input ${errors.location_ar ? "border-red-500 border" : ""}`}
+              />
+            </div>
           </div>
 
           {/* Date */}
           <div className="input-group">
-            <label className="btn btn-input w-[7em]">Date</label>
+            <label className="btn btn-input w-[9em]">Date</label>
             <input
               name="date"
               value={formData.date}
@@ -72,7 +98,9 @@ function AddEvent() {
 
           {/* Main Photo */}
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold text-gray-700">Main Photo</label>
+            <label className="mb-2 font-semibold text-gray-700">
+              Main Photo
+            </label>
             <input
               type="file"
               accept="image/*"
@@ -132,7 +160,7 @@ function AddEvent() {
 
           {/* Video URL (Not Upload) */}
           <div className="input-group">
-            <label className="btn btn-input w-[7em]">Video URL</label>
+            <label className="btn btn-input w-[9em]">Video URL</label>
             <input
               name="video"
               value={video}
@@ -145,37 +173,71 @@ function AddEvent() {
         </div>
 
         {/* Description Editor */}
-        <div
-          className={`bg-white p-6 shadow-lg rounded-2xl mt-8 ${
-            errors.description ? "border border-red-500" : ""
-          }`}
-        >
-          <h2 className="text-xl font-bold mb-4">Description</h2>
-          <ReactQuill
-            value={formData.description}
-            onChange={handleDescriptionChange}
-            modules={{
-              toolbar: [
-                [{ header: [1, 2, false] }],
-                ["bold", "italic", "underline", "strike"],
-                [{ list: "ordered" }, { list: "bullet" }],
-                ["link", "image"],
-                ["clean"],
-              ],
-            }}
-            formats={[
-              "header",
-              "bold",
-              "italic",
-              "underline",
-              "strike",
-              "list",
-              "bullet",
-              "link",
-              "image",
-            ]}
-            className="bg-white text-black min-h-[400px]"
-          />
+        <div className="grid grid-cols-2 gap-5">
+          <div
+            className={`bg-white p-6 shadow-lg rounded-2xl mt-8 ${
+              errors.description ? "border border-red-500" : ""
+            }`}
+          >
+            <h2 className="text-xl font-bold mb-4">Description-en</h2>
+            <ReactQuill
+              value={formData.description_en}
+              onChange={handleDescriptionChangeEN}
+              modules={{
+                toolbar: [
+                  [{ header: [1, 2, false] }],
+                  ["bold", "italic", "underline", "strike"],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["link", "image"],
+                  ["clean"],
+                ],
+              }}
+              formats={[
+                "header",
+                "bold",
+                "italic",
+                "underline",
+                "strike",
+                "list",
+                "bullet",
+                "link",
+                "image",
+              ]}
+              className="bg-white text-black min-h-[400px]"
+            />
+          </div>{" "}
+          <div
+            className={`bg-white p-6 shadow-lg rounded-2xl mt-8 ${
+              errors.description ? "border border-red-500" : ""
+            }`}
+          >
+            <h2 className="text-xl font-bold mb-4">Description-ar</h2>
+            <ReactQuill
+              value={formData.description_ar}
+              onChange={handleDescriptionChangeAR}
+              modules={{
+                toolbar: [
+                  [{ header: [1, 2, false] }],
+                  ["bold", "italic", "underline", "strike"],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["link", "image"],
+                  ["clean"],
+                ],
+              }}
+              formats={[
+                "header",
+                "bold",
+                "italic",
+                "underline",
+                "strike",
+                "list",
+                "bullet",
+                "link",
+                "image",
+              ]}
+              className="bg-white text-black min-h-[400px]"
+            />
+          </div>
         </div>
 
         <div className="mt-6 flex justify-end">

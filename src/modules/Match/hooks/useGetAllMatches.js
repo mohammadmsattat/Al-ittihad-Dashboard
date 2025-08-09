@@ -35,15 +35,13 @@ const useGetAllMatches = () => {
     try {
       if (DeleteId) {
         const result = await deleteNews(DeleteId).unwrap();
-        toast.success("News item Deleted successfully!");
+        toast.success("Match Deleted successfully!");
         setDeleteId();
-        if (result.status === "true") {
-          refetch();
+        if (result.status !== "true") {
+          toast.error("Failed to Delete Match!");
         }
       }
     } catch (err) {
-      toast.error("Failed to update news!");
-
       console.error("delete failed", err);
     }
   };
@@ -65,16 +63,6 @@ const useGetAllMatches = () => {
     setSearchParams(searchParams);
   };
 
-  const handleCategoryChange = (categoryId) => {
-    if (categoryId) {
-      searchParams.set("category", categoryId);
-    } else {
-      searchParams.delete("category");
-    }
-    searchParams.set("page", 1);
-    setSearchParams(searchParams);
-  };
-
   return {
     MatchesData,
     isLoading,
@@ -92,7 +80,6 @@ const useGetAllMatches = () => {
     totalPages: MatchesData?.pagination?.totalPages || 0,
     searchTerm,
     handleSearch,
-    handleCategoryChange,
   };
 };
 

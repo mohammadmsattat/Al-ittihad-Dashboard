@@ -3,22 +3,22 @@ import { Container } from "@mui/material";
 import { ToastContainer } from "react-toastify";
 import useUpdateInvestment from "../hooks/useUpdateInvestment";
 
-  const TextAreaField = ({ label, name, value, onChange, error, required }) => (
-    <div className="flex flex-col mb-5">
-      <label className="text-sm font-medium mb-1">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <textarea
-        name={name}
-        value={value}
-        onChange={onChange}
-        className={`textarea w-full border rounded p-2 ${error ? "border-red-500" : "border-gray-300"}`}
-        required={required}
-        rows={4}
-      />
-      {error && <p className="text-red-500 text-sm mt-1">هذا الحقل مطلوب</p>}
-    </div>
-  );
+const TextAreaField = ({ label, name, value, onChange, error, required }) => (
+  <div className="flex flex-col mb-5">
+    <label className="text-sm font-medium mb-1">
+      {label} {required && <span className="text-red-500">*</span>}
+    </label>
+    <textarea
+      name={name}
+      value={value}
+      onChange={onChange}
+      className={`textarea w-full border rounded p-2 ${error ? "border-red-500" : "border-gray-300"}`}
+      required={required}
+      rows={4}
+    />
+    {error && <p className="text-red-500 text-sm mt-1">هذا الحقل مطلوب</p>}
+  </div>
+);
 const UpdateInvestment = () => {
   const {
     formData,

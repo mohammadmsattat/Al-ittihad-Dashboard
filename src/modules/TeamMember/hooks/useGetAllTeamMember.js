@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 
 import { toast } from "react-toastify";
 import {
-  useDeleteTeamMemberMutation, // ✅ used correct mutation name
+  useDeleteTeamMemberMutation, 
   useGetAllTeamMemberQuery,
 } from "../../../rtk/teamMemberApi/teamMemberApi";
 
@@ -28,14 +28,13 @@ const useGetAllTeamMember = () => {
     refetch,
   } = useGetAllTeamMemberQuery(query);
 
-  const [deleteTeamMember] = useDeleteTeamMemberMutation(); // ✅ renamed from deleteNews
+  const [deleteTeamMember] = useDeleteTeamMemberMutation(); 
 
   const handleDeleteTeamMember = async () => {
     try {
       if (DeleteId) {
-        const result = await deleteTeamMember(DeleteId).unwrap(); // ✅ updated function name
+        const result = await deleteTeamMember(DeleteId).unwrap(); 
 
-        // ✅ Updated logic for accurate toast messages based on returned status
         if (result.status === "true") {
           toast.success("Team Member Deleted successfully");
           setDeleteId();
@@ -45,7 +44,7 @@ const useGetAllTeamMember = () => {
       }
     } catch (err) {
       console.error("delete failed", err);
-      toast.error("Something went wrong while deleting"); // optional improvement
+      toast.error("Something went wrong while deleting");
     }
   };
 

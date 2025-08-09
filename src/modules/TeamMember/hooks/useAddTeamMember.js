@@ -5,7 +5,6 @@ import { useCreateTeamMemberMutation } from "../../../rtk/teamMemberApi/teamMemb
 import { useGetAllTeamQuery } from "../../../rtk/teamApi/teamApi";
 
 export const useAddTeamMember = () => {
-  // ✅ جلب كل الفرق لإتاحة الاختيار منها عند إنشاء العضو
   const {
     data: TeamData,
     isLoading: getTeamLoading,
@@ -16,7 +15,6 @@ export const useAddTeamMember = () => {
   const [addTeamMember, { isLoading, error }] = useCreateTeamMemberMutation();
   const navigate = useNavigate();
 
-  // ✅ البيانات الأساسية لإنشاء عضو الفريق بناءً على الـ Schema المرسل
   const [formData, setFormData] = useState({
     nameAR: "",
     nameEN: "",
@@ -36,16 +34,14 @@ export const useAddTeamMember = () => {
     },
   });
 
-  const [thumbnail, setThumbnail] = useState(null); // ✅ صورة العضو
-  const [preview, setPreview] = useState(null); // ✅ عرض معاينة
+  const [thumbnail, setThumbnail] = useState(null); 
+  const [preview, setPreview] = useState(null); 
 
-  const [errors, setErrors] = useState({}); // ✅ لتخزين الأخطاء في النموذج
+  const [errors, setErrors] = useState({}); 
 
-  // ✅ التعامل مع التغييرات في المدخلات
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // التعامل مع الحقول داخل stats
     if (name in formData.stats) {
       setFormData((prev) => ({
         ...prev,
@@ -61,7 +57,6 @@ export const useAddTeamMember = () => {
     setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
-  // ✅ التعامل مع رفع الصورة
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -71,7 +66,6 @@ export const useAddTeamMember = () => {
     }
   };
 
-  // ✅ إزالة الصورة المرفوعة
   const removeThumbnail = () => {
     setThumbnail(null);
     if (preview) {
@@ -80,7 +74,6 @@ export const useAddTeamMember = () => {
     }
   };
 
-  // ✅ التحقق من صحة المدخلات
   const validate = () => {
     const newErrors = {};
     if (!formData.nameAR.trim()) newErrors.nameAR = true;
@@ -92,7 +85,7 @@ export const useAddTeamMember = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // ✅ إرسال النموذج
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
@@ -115,7 +108,6 @@ export const useAddTeamMember = () => {
     formDataToSend.append("stats.yellowCards", formData.stats.yellowCards);
     formDataToSend.append("stats.redCards", formData.stats.redCards);
 
-    // ✅ إرسال الصورة إذا وُجدت
     if (thumbnail) formDataToSend.append("photo", thumbnail);
 
     try {
@@ -123,7 +115,7 @@ export const useAddTeamMember = () => {
       toast.success("تم حفظ عضو الفريق بنجاح");
 
       setTimeout(() => {
-        navigate("/all-teamMember"); // ✅ إعادة التوجيه إلى صفحة عرض الأعضاء
+        navigate("/all-teamMember"); 
       }, 2000);
     } catch (err) {
       toast.error("فشل في إضافة عضو الفريق!");
@@ -141,7 +133,7 @@ export const useAddTeamMember = () => {
     isLoading,
     error,
     errors,
-    TeamData, // ✅ البيانات المطلوبة لعرض الفرق في القائمة المنسدلة
+    TeamData, 
     getTeamLoading,
     getTeamError,
   };

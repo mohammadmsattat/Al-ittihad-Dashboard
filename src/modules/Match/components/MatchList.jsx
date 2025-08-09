@@ -29,7 +29,6 @@ const MatchList = () => {
     totalPages,
     searchTerm,
     handleSearch,
-    handleCategoryChange,
   } = useGetAllMatches();
   console.log(MatchesData);
 
@@ -55,7 +54,7 @@ const MatchList = () => {
               <FormattedMessage id="Matches" />
             </h3>
             <div className="flex gap-6 items-center">
-              <Link to={"/add-news"}>
+              <Link to={"/add-match"}>
                 <button
                   type="button"
                   className="btn btn-sm btn-outline btn-primary h-8  flex items-center gap-2 capitalize"
@@ -89,13 +88,15 @@ const MatchList = () => {
                     <tr>
                       <th>#</th>
                       <th className="min-w-[175px]">Image</th>
-                      <th className="min-w-[175px]">Title</th>
+                      <th className="min-w-[175px]">location</th>
+                      <th className="min-w-[175px]">homeTeam</th>
+                      <th className="min-w-[175px]">awayTeam</th>
                       <th className="min-w-[125px]">Created At</th>
                       <th className="w-[80px]">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {/* {MatchesData?.data?.map((item, index) => (
+                    {MatchesData?.data?.map((item, index) => (
                       <tr key={item._id}>
                         <td>
                           <span className="badge badge-outline">
@@ -103,13 +104,12 @@ const MatchList = () => {
                           </span>
                         </td>
                         <td>
-                          <img src={item?.photo} />
+                          <img src={item?.photo} className="w-[8em] " />
                         </td>
-
-                        <td>{item.title} </td>
-
-                        <td>{FormatTime(item?.createdAt)}</td>
-
+                        <td>{item.locationEN} </td>
+                        <td>{item.homeTeam?.nameEN} </td>
+                        <td>{item.awayTeam?.nameEN} </td>
+                        <td>{FormatTime(item?.date)}</td>
                         <td>
                           <div className="flex gap-2 items-center">
                             <Link to={`/news-detailes/${item.slug}`}>
@@ -117,7 +117,7 @@ const MatchList = () => {
                                 <i className="btn ki-duotone ki-eye text-xl p-0 cursor-pointer"></i>
                               </Tooltip>
                             </Link>
-                            <Link to={`/update-news/${item.slug}`}>
+                            <Link to={`/update-match/${item._id}`}>
                               <Tooltip
                                 title="edit"
                                 placement="top"
@@ -136,7 +136,7 @@ const MatchList = () => {
                               <div
                                 className="relative group cursor-pointer"
                                 onClick={() => {
-                                  setDeleteId(item.slug);
+                                  setDeleteId(item._id);
                                   setShow(true);
                                 }}
                               >
@@ -146,7 +146,7 @@ const MatchList = () => {
                           </div>
                         </td>
                       </tr>
-                    ))} */}
+                    ))}
                   </tbody>
                 </table>
 

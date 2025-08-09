@@ -16,6 +16,14 @@ import AddNews from "../modules/News/components/AddNewsItem";
 import AddEvent from "../modules/Events/components/AddEvent";
 import AddTeamMember from "../modules/TeamMember/components/AddTeamMember";
 import UpdateNews from "../modules/News/components/UpdateNewsItem";
+import UpdateTeamMember from "../modules/TeamMember/components/UpdateTeamMember";
+import UpdateEvent from "../modules/Events/components/UpdateEvent";
+import AddMembership from "../modules/Membership/components/AddMembership";
+import UpdateMembership from "../modules/Membership/components/UpdateMembership";
+import AddMatch from "../modules/Match/components/AddMatch";
+import UpdateMatch from "../modules/Match/components/UpdateMatch";
+import AddInvestment from "../modules/Investment/components/AddInvestment";
+import UpdateInvestment from "../modules/Investment/components/UpdateInvestment";
 
 //dashboard
 
@@ -30,13 +38,21 @@ const AppRoutingSetup = () => {
         <Route path="/update-news/:id" element={<UpdateNews />} />
         <Route path="/all-contact" element={<ContactList />} />
         <Route path="/all-matches" element={<MatchList />} />
+        <Route path="/add-match" element={<AddMatch />} />
+        <Route path="/update-match/:id" element={<UpdateMatch />} />
         <Route path="/all-team" element={<TeamList />} />
-        <Route path="/all-teamMember" element={<TeamMemberList />} />{" "}
-        <Route path="/add-teamMember" element={<AddTeamMember />} />
+        <Route path="/all-teamMember" element={<TeamMemberList />} />
+        <Route path="/add-membership" element={<AddMembership />} />
+        <Route path="/update-membership/:id" element={<UpdateMembership />} />
+        <Route path="/add-teamMember" element={<AddTeamMember />} />{" "}
+        <Route path="/update-teamMember/:id" element={<UpdateTeamMember />} />
         <Route path="/all-membership" element={<MembershipList />} />
         <Route path="/all-event" element={<EventList />} />
-        <Route path="/add-event" element={<AddEvent />} />
+        <Route path="/add-event" element={<AddEvent />} />{" "}
+        <Route path="/update-event/:id" element={<UpdateEvent />} />
         <Route path="/all-investment" element={<InvestmentList />} />
+        <Route path="/add-investment" element={<AddInvestment />} />
+        <Route path="/update-investment/:id" element={<UpdateInvestment />} />
       </Route>
       <Route path="error/*" element={<ErrorsRouting />} />
       <Route path="auth/*" element={<AuthPage />} />

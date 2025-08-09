@@ -77,9 +77,7 @@ const EventList = () => {
                 />
               </div>
 
-              {/* <span className="badge badge-primary badge-outline w-[150px]">
-                Number of News: {totalCount}
-              </span> */}
+           
             </div>
           </div>
 
@@ -119,8 +117,8 @@ const EventList = () => {
                             <span>No Photo</span>
                           )}
                         </td>
-                        <td>{item.title} </td>
-                        <td>{item.location} </td>
+                        <td>{item.titleEN} </td>
+                        <td>{item.locationEN} </td>
 
                         <td>{FormatTime(item?.date)}</td>
 

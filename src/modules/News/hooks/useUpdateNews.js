@@ -11,7 +11,11 @@ export const useUpdateNews = () => {
   const navigate = useNavigate();
 
   const [updateNews, { isLoading: isUpdating }] = useUpdateNewsMutation();
-  const { data: newsData, isLoading: isNewsLoading ,isError } = useGetOneNewsQuery(id, {
+  const {
+    data: newsData,
+    isLoading: isNewsLoading,
+    isError,
+  } = useGetOneNewsQuery(id, {
     skip: !id,
   });
 
@@ -29,6 +33,8 @@ export const useUpdateNews = () => {
   const [images, setImages] = useState([]);
   const [errors, setErrors] = useState({});
   console.log(images);
+
+  //convert the url of photo to file
   const urlToFile = async (url, filename = "image") => {
     try {
       const response = await fetch(url);

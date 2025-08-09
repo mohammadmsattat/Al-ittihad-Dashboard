@@ -11,23 +11,21 @@ export const useUpdateTeamMember = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // ✅ Get existing team member data by ID
   const {
     data: memberData,
     isLoading: isMemberLoading,
     error: getError,
   } = useGetOneTeamMemberQuery(id);
 
-  // ✅ Get all teams for the dropdown list
   const {
     data: TeamData,
     isLoading: isTeamLoading,
     error: getTeamError,
   } = useGetAllTeamQuery();
 
-  const [updateTeamMember, { isLoading: isUpdating }] = useUpdateTeamMemberMutation();
+  const [updateTeamMember, { isLoading: isUpdating }] =
+    useUpdateTeamMemberMutation();
 
-  // ✅ Form state
   const [formData, setFormData] = useState({
     nameAR: "",
     nameEN: "",
@@ -52,7 +50,6 @@ export const useUpdateTeamMember = () => {
   const [preview, setPreview] = useState(null);
   const [errors, setErrors] = useState({});
 
-  // ✅ Pre-fill form with existing data
   useEffect(() => {
     if (memberData?.data) {
       const m = memberData.data;
@@ -82,7 +79,6 @@ export const useUpdateTeamMember = () => {
     }
   }, [memberData]);
 
-  // ✅ Input field handler
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -104,7 +100,6 @@ export const useUpdateTeamMember = () => {
     setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
-  // ✅ Handle photo upload
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -114,13 +109,11 @@ export const useUpdateTeamMember = () => {
     }
   };
 
-  // ✅ Remove uploaded photo
   const removeThumbnail = () => {
     setThumbnail(null);
     setPreview(null);
   };
 
-  // ✅ Validation
   const validate = () => {
     const newErrors = {};
     if (!formData.nameAR.trim()) newErrors.nameAR = true;
@@ -130,7 +123,6 @@ export const useUpdateTeamMember = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // ✅ Form submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
@@ -155,11 +147,10 @@ export const useUpdateTeamMember = () => {
     if (thumbnail) {
       formDataToSend.append("photo", thumbnail);
     }
-console.log(formData.nameEN);
 
     try {
       await updateTeamMember({ id, data: formDataToSend }).unwrap();
-      toast.success("تم تحديث عضو الفريق بنجاح");
+      toast.success("Team Member Updated successfully");
       setTimeout(() => navigate("/all-teamMember"), 2000);
     } catch (err) {
       console.error("Update error:", err);

@@ -31,20 +31,15 @@ const TeamMemberList = () => {
     handleSearch,
   } = useGetAllTeamMember();
 
-  // ✅ عرض حالة التحميل
   if (isLoading) return <LoadingCard />;
-
-  // ✅ عرض رسالة الخطأ إذا فشل الطلب
   if (error) return <ErrorMessageCard />;
 
-  // ✅ التعامل مع تغيير الصفحة
   const onPageChange = (page) => {
     if (page < 1) page = 1;
     else if (page > totalCount) page = totalCount;
     setCurrentPage(page);
   };
 
-  // ✅ التعامل مع تغيير عدد العناصر لكل صفحة
   const onPerPageChange = (limit) => {
     setPerPage(limit);
   };
@@ -58,7 +53,6 @@ const TeamMemberList = () => {
               <FormattedMessage id="Team Member" />
             </h3>
 
-            {/* ✅ زر الإضافة + حقل البحث */}
             <div className="flex gap-6 items-center">
               <Link to={"/add-teamMember"}>
                 <button
@@ -86,7 +80,10 @@ const TeamMemberList = () => {
           <div className="card-body">
             <div data-datatable="true" data-datatable-page-size="5">
               <div className="scrollable-x-auto">
-                <table className="table table-auto table-border" id="grid_table">
+                <table
+                  className="table table-auto table-border"
+                  id="grid_table"
+                >
                   <thead>
                     <tr>
                       <th>#</th>
@@ -106,7 +103,6 @@ const TeamMemberList = () => {
                           </span>
                         </td>
 
-      
                         <td>
                           <img
                             src={item?.photo}
@@ -114,38 +110,42 @@ const TeamMemberList = () => {
                           />
                         </td>
 
-                  
                         <td>{item?.nameEN}</td>
 
                         <td>{item?.number}</td>
 
-                        <td>{(item?.position)}</td>
+                        <td>{item?.position}</td>
 
                         <td>
                           <div className="flex gap-2 items-center">
-                            {/* ✅ زر العرض - غير مفعّل هنا لأنه يوجه إلى news-detailes */}
                             <Link to={`/news-detailes/${item._id}`}>
                               <Tooltip placement="top" disableInteractive>
                                 <i className="btn ki-duotone ki-eye text-xl p-0 cursor-pointer"></i>
                               </Tooltip>
                             </Link>
 
-                            {/* ✅ زر التعديل - يوجه إلى صفحة غير متعلقة بـ Team Member، يمكن تعديل الرابط */}
                             <Link to={`/update-teamMember/${item._id}`}>
-                              <Tooltip title="edit" placement="top" disableInteractive>
+                              <Tooltip
+                                title="edit"
+                                placement="top"
+                                disableInteractive
+                              >
                                 <button className="cursor-pointer">
                                   <i className="ki-filled ki-notepad-edit text-xl" />
                                 </button>
                               </Tooltip>
                             </Link>
 
-                            {/* ✅ زر الحذف */}
-                            <Tooltip title="delete" placement="top" disableInteractive>
+                            <Tooltip
+                              title="delete"
+                              placement="top"
+                              disableInteractive
+                            >
                               <div
                                 className="relative group cursor-pointer"
                                 onClick={() => {
-                                  setDeleteId(item._id); // ✅ تخزين ID العنصر للحذف
-                                  setShow(true); // ✅ إظهار نافذة التأكيد
+                                  setDeleteId(item._id);
+                                  setShow(true);
                                 }}
                               >
                                 <i className="ki-filled ki-trash text-xl text-red-500" />
@@ -158,7 +158,6 @@ const TeamMemberList = () => {
                   </tbody>
                 </table>
 
-                {/* ✅ التحكم في عدد العناصر والصفحات */}
                 <div className="card-footer flex justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
                   <PageSizeSelector
                     perPage={perPage}
@@ -176,7 +175,6 @@ const TeamMemberList = () => {
         </div>
       </div>
 
-      {/* ✅ نافذة التأكيد قبل الحذف */}
       <DeleteModal
         sh={show}
         onClose={setShow}
@@ -185,7 +183,6 @@ const TeamMemberList = () => {
         question={"Are you sure you want to delete this item?"}
       />
 
-      {/* ✅ إشعارات التوست (نجاح أو خطأ) */}
       <ToastContainer
         position="top-right"
         autoClose={2000}
