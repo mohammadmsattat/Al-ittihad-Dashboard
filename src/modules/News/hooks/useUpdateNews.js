@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  useGetOneNewsQuery,
   useUpdateNewsMutation,
+  useGetOneNewsQuery,
 } from "../../../rtk/newsApi/newsApi";
 import { toast } from "react-toastify";
 
@@ -10,97 +10,180 @@ export const useUpdateNews = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const {
-    data: newsData,
-    isLoading: isNewsLoading,
-    error: getError,
-  } = useGetOneNewsQuery(id);
-
   const [updateNews, { isLoading: isUpdating }] = useUpdateNewsMutation();
-
-  const [formData, setFormData] = useState({
-    title: "",
-    content: "",
-    video: null,
+  const { data: newsData, isLoading: isNewsLoading ,isError } = useGetOneNewsQuery(id, {
+    skip: !id,
   });
 
-  const [preview, setPreview] = useState(null); // لمعاينة الفيديو الحالي أو الجديد
+  const [formData, setFormData] = useState({
+    title_en: "",
+    title_ar: "",
+    content_en: "",
+    content_ar: "",
+    isVideo: false,
+    videoUrl: "",
+  });
+
+  const [thumbnail, setThumbnail] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [images, setImages] = useState([]);
   const [errors, setErrors] = useState({});
+  console.log(images);
+  const urlToFile = async (url, filename = "image") => {
+    try {
+      const response = await fetch(url);
 
-  // تعبئة البيانات عند التحميل
-  useEffect(() => {
-    if (newsData?.data) {
-      const news = newsData.data;
-      setFormData({
-        title: news.title || "",
-        content: news.content || "",
-        video: null, // نتركه فارغ لأنه سيتم رفع فيديو جديد لو تم تغييره
-      });
+      if (!response.ok) {
+        throw new Error(`Failed to fetch image. Status: ${response.status}`);
+      }
 
-      setPreview(news.video || null);
+      const contentType = response.headers.get("Content-Type");
+      if (!contentType || !contentType.startsWith("image/")) {
+        throw new Error(
+          `URL does not point to an image. Content-Type: ${contentType}`
+        );
+      }
 
-      setImages(
-        (news.images || []).map((imgUrl) => ({
-          name: imgUrl.split("/").pop(),
-          url: imgUrl,
-          file: null,
-        }))
-      );
+      const blob = await response.blob();
+      const extension = contentType.split("/")[1].split(";")[0];
+      const safeFilename = filename.endsWith(`.${extension}`)
+        ? filename
+        : `${filename}.${extension}`;
+
+      return new File([blob], safeFilename, { type: contentType });
+    } catch (error) {
+      console.error("urlToFile error:", error);
+      return null;
     }
+  };
+  useEffect(() => {
+    const loadFiles = async () => {
+      if (newsData) {
+        setFormData({
+          title_en: newsData?.data.titleEN || "",
+          title_ar: newsData?.data.titleAR || "",
+          content_en: newsData?.data.contentEN || "",
+          content_ar: newsData?.data.contentAR || "",
+          isVideo: !!newsData?.data.video,
+          videoUrl: newsData?.data.video || "",
+        });
+
+        if (newsData?.data.photo) {
+          const thumbFile = await urlToFile(newsData.data.photo, "thumbnail");
+          if (thumbFile) {
+            setThumbnail(thumbFile);
+            setPreview(URL.createObjectURL(thumbFile));
+          }
+        }
+
+        if (newsData?.data.images?.length > 0) {
+          const imageFiles = await Promise.all(
+            newsData.data.images.map((url, idx) =>
+              urlToFile(url, `image-${idx + 1}`)
+            )
+          );
+          setImages(imageFiles.filter(Boolean));
+        }
+      }
+    };
+
+    loadFiles();
   }, [newsData]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, type, checked, value } = e.target;
+
+    if (name === "isVideo") {
+      setFormData((prev) => ({
+        ...prev,
+        isVideo: checked,
+        videoUrl: checked ? prev.videoUrl : "",
+      }));
+    } else {
+      const val = type === "checkbox" ? checked : value;
+      setFormData((prev) => ({ ...prev, [name]: val }));
+    }
+
     setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
-  const handleContentChange = (content) => {
-    setFormData((prev) => ({ ...prev, content }));
-    setErrors((prev) => ({ ...prev, content: false }));
-  };
-
-  const handleVideoChange = (e) => {
+  const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData((prev) => ({ ...prev, video: file }));
+      setThumbnail(file);
       setPreview(URL.createObjectURL(file));
-      setErrors((prev) => ({ ...prev, video: false }));
+      setErrors((prev) => ({ ...prev, thumbnail: false }));
     }
   };
 
-  const removeVideo = () => {
-    setFormData((prev) => ({ ...prev, video: null }));
-    setPreview(null);
+  const removeThumbnail = () => {
+    setThumbnail(null);
+    if (preview) {
+      URL.revokeObjectURL(preview);
+      setPreview(null);
+    }
+  };
+
+  const handleContentChangeEn = (content_en) => {
+    setFormData((prev) => ({ ...prev, content_en }));
+    setErrors((prev) => ({ ...prev, content_en: false }));
+  };
+
+  const handleContentChangeAr = (content_ar) => {
+    setFormData((prev) => ({ ...prev, content_ar }));
+    setErrors((prev) => ({ ...prev, content_ar: false }));
   };
 
   const handleImagesChange = (e) => {
     const newFiles = Array.from(e.target.files);
     const uniqueFiles = newFiles.filter(
-      (file) => !images.some((img) => img.name === file.name)
+      (file) => !images.some((f) => f.name === file.name)
     );
-    setImages((prev) => [
-      ...prev,
-      ...uniqueFiles.map((file) => ({
-        name: file.name,
-        file,
-        url: null,
-      })),
-    ]);
+    setImages((prev) => [...prev, ...uniqueFiles]);
   };
 
-  const removeImage = (index) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
+  const removeImage = (fileToRemove) => {
+    setImages((prev) => prev.filter((file) => file.name !== fileToRemove));
   };
+  console.log(images);
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.title.trim()) newErrors.title = true;
-    if (!formData.content.trim()) newErrors.content = true;
-    // if (!preview && !formData.video) newErrors.video = true; // إن أردت التأكد من وجود فيديو دائمًا
+    let firstEmptyFieldName = "";
+
+    if (!formData.title_en.trim()) {
+      newErrors.title_en = true;
+      firstEmptyFieldName ||= "Title (English)";
+    }
+
+    if (!formData.title_ar.trim()) {
+      newErrors.title_ar = true;
+      firstEmptyFieldName ||= "Title (Arabic)";
+    }
+
+    if (!thumbnail && !preview) {
+      newErrors.thumbnail = true;
+      firstEmptyFieldName ||= "Image";
+    }
+
+    if (!formData.content_en.trim()) {
+      newErrors.content_en = true;
+      firstEmptyFieldName ||= "Content (English)";
+    }
+
+    if (!formData.content_ar.trim()) {
+      newErrors.content_ar = true;
+      firstEmptyFieldName ||= "Content (Arabic)";
+    }
+
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    if (Object.keys(newErrors).length > 0) {
+      toast.error(`Please fill the field: ${firstEmptyFieldName}`);
+      return false;
+    }
+
+    return true;
   };
 
   const handleSubmit = async (e) => {
@@ -108,46 +191,56 @@ export const useUpdateNews = () => {
     if (!validate()) return;
 
     const formDataToSend = new FormData();
-    formDataToSend.append("title", formData.title);
-    formDataToSend.append("content", formData.content);
 
-    if (formData.video) {
-      formDataToSend.append("video", formData.video);
+    formDataToSend.append("titleEN", formData.title_en);
+    formDataToSend.append("titleAR", formData.title_ar);
+    formDataToSend.append("contentEN", formData.content_en);
+    formDataToSend.append("contentAR", formData.content_ar);
+
+    if (formData.isVideo && formData.videoUrl) {
+      formDataToSend.append("video", formData.videoUrl);
     }
 
-    // رفع الصور الجديدة فقط
-    images.forEach((img) => {
-      if (img.file) {
-        formDataToSend.append("images", img.file);
-      }
-    });
+    if (thumbnail) {
+      formDataToSend.append("photo", thumbnail);
+    }
+    if (images.length > 0) {
+      images.forEach((image) => {
+        formDataToSend.append("images", image);
+      });
+    } else {
+      formDataToSend.append("images", []);
+    }
 
     try {
-      const res = await updateNews({ id, data: formDataToSend }).unwrap();
+      await updateNews({ id, data: formDataToSend }).unwrap();
       toast.success("News updated successfully!");
-
       setTimeout(() => {
         navigate("/all-news");
-      }, 2000);
-    } catch (error) {
-      console.error("Error updating news:", error);
-      toast.error("Failed to update news!");
+      }, 1500);
+    } catch (err) {
+      console.log(err);
+
+      console.error(err);
+      toast.error("Failed to Update news!");
     }
   };
 
   return {
     formData,
     handleChange,
-    handleContentChange,
+    handleContentChangeEn,
+    handleContentChangeAr,
     preview,
-    handleVideoChange,
-    removeVideo,
+    thumbnail,
+    handleThumbnailChange,
+    removeThumbnail,
     images,
     handleImagesChange,
     removeImage,
     handleSubmit,
-    isLoading: isNewsLoading ,
-    getError,
+    isLoading: isNewsLoading,
+    isError,
     errors,
   };
 };

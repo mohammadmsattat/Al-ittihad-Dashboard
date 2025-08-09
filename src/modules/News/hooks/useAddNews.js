@@ -15,9 +15,9 @@ export const useAddNews = () => {
     isVideo: false,
     videoUrl: "",
   });
-
-  const [images, setImages] = useState([]);
+  const [thumbnail, setThumbnail] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [images, setImages] = useState([]);
 
   const [errors, setErrors] = useState({});
 
@@ -38,6 +38,22 @@ export const useAddNews = () => {
     setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
+  const handleThumbnailChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setThumbnail(file);
+      setPreview(URL.createObjectURL(file));
+      setErrors((prev) => ({ ...prev, thumbnail: false }));
+    }
+  };
+
+  const removeThumbnail = () => {
+    setThumbnail(null);
+    if (preview) {
+      URL.revokeObjectURL(preview);
+      setPreview(null);
+    }
+  };
   const handleContentChangeEn = (content_en) => {
     setFormData((prev) => ({ ...prev, content_en }));
     setErrors((prev) => ({ ...prev, content_en: false }));
@@ -78,12 +94,41 @@ export const useAddNews = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.title.trim()) newErrors.title = true;
-    if (!formData.content_en.trim()) newErrors.content = true;
-    if (!formData.content_ar.trim()) newErrors.content = true;
+    let firstEmptyFieldName = "";
+
+    if (!formData.title_en.trim()) {
+      newErrors.title_en = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Title (English)";
+    }
+
+    if (!formData.title_ar.trim()) {
+      newErrors.title_ar = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Title (Arabic)";
+    }
+
+    if (!thumbnail) {
+      newErrors.thumbnail = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Image";
+    }
+
+    if (!formData.content_en.trim()) {
+      newErrors.content_en = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Content (English)";
+    }
+
+    if (!formData.content_ar.trim()) {
+      newErrors.content_ar = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Content (Arabic)";
+    }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    if (Object.keys(newErrors).length > 0) {
+      toast.error(`Please fill the field: ${firstEmptyFieldName}`);
+      return false;
+    }
+
+    return true;
   };
 
   const handleSubmit = async (e) => {
@@ -92,14 +137,17 @@ export const useAddNews = () => {
 
     const formDataToSend = new FormData();
 
-    formDataToSend.append("title", formData.title);
-    formDataToSend.append("content", formData.content);
-    console.log(formData.content);
+    formDataToSend.append("titleEN", formData.title_en);
+    formDataToSend.append("titleAR", formData.title_ar);
 
-    formDataToSend.append("isVideo", formData.isVideo); // true / false
+    formDataToSend.append("contentEN", formData.content_en);
+    formDataToSend.append("contentAR", formData.content_ar);
+
     if (formData.isVideo && formData.videoUrl) {
       formDataToSend.append("video", formData.videoUrl);
     }
+    if (thumbnail) formDataToSend.append("photo", thumbnail);
+
     images.forEach((image) => formDataToSend.append("images", image));
 
     try {
@@ -107,9 +155,9 @@ export const useAddNews = () => {
       console.log(res);
 
       toast.success("News saved successfully!");
-      // setTimeout(() => {
-      //   navigate("/all-news");
-      // }, 2000);
+      setTimeout(() => {
+        navigate("/all-news");
+      }, 2000);
     } catch (err) {
       console.log(err);
 
@@ -124,6 +172,9 @@ export const useAddNews = () => {
     handleContentChangeEn,
     handleContentChangeAr,
     preview,
+    thumbnail,
+    handleThumbnailChange,
+    removeThumbnail,
     handleVideoChange,
     removeVideo,
     images,

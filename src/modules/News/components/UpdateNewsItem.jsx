@@ -2,66 +2,68 @@ import { Container } from "@mui/material";
 import { X } from "lucide-react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { WithContext as ReactTags } from "react-tag-input";
 import { ToastContainer } from "react-toastify";
-import { useUpdateNews } from "../hooks/useUpdateNews";
-import LoadingCard from "../../../components/Global/LoadingCard";
-import ErrorMessageCard from "../../../components/Global/ErrorMessageCard";
-
-const KeyCodes = {
-  comma: 188,
-  enter: 13,
-};
-
-const delimiters = [KeyCodes.comma, KeyCodes.enter];
+import { useUpdateNews } from "../hooks/useUpdateNews.js";
+import LoadingCard from "../../../components/Global/LoadingCard.jsx";
+import ErrorMessageCard from "../../../components/Global/ErrorMessageCard.jsx";
 
 function UpdateNews() {
   const {
     formData,
     handleChange,
-    handleContentChange,
+    handleContentChangeEn,
+    handleContentChangeAr,
     preview,
-    handleVideoChange,
-    removeVideo,
+    thumbnail,
+    handleThumbnailChange,
+    removeThumbnail,
     images,
     handleImagesChange,
     removeImage,
     handleSubmit,
     isLoading,
-    getError,
+    isError,
     errors,
   } = useUpdateNews();
+
   if (isLoading) return <LoadingCard />;
-  if (getError) return <ErrorMessageCard />;
+  if (isError) return <ErrorMessageCard />;
+  
   return (
     <Container maxWidth="lg" className="my-10">
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Video Section */}
-          <div className="bg-white p-6 shadow-lg rounded-2xl">
-            <h2 className="text-xl font-bold text-center mb-4">Add Video</h2>
+          <div
+            className={`bg-white p-6 shadow-lg rounded-2xl ${
+              errors.thumbnail ? "border-2 border-red-500" : ""
+            }`}
+          >
+            <h2 className="text-xl font-bold text-center mb-4">Add Photo</h2>
 
             <div
               className={`w-full h-48 bg-gray-100 border-2 border-dashed rounded-lg flex items-center justify-center overflow-hidden ${
-                errors.video ? "border-red-500" : "border-gray-300"
+                errors.thumbnail ? "border-red-500" : "border-gray-300"
               }`}
             >
               {preview ? (
-                <video controls className="object-contain h-full w-full">
-                  <source src={preview} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="object-contain h-full w-full"
+                />
               ) : (
-                <span className="text-gray-400">No Video Selected</span>
+                <span className="text-gray-400">
+                  No Selected <i className="icon-magento"></i>
+                </span>
               )}
             </div>
 
-            {formData.video && (
+            {(thumbnail || preview) && (
               <div className="flex justify-between items-center mt-2 bg-gray-100 p-2 border rounded-md">
                 <span className="text-sm truncate max-w-[80%]">
-                  {formData.video.name}
+                  {thumbnail ? thumbnail.name : "Current Image"}
                 </span>
-                <button type="button" onClick={removeVideo}>
+                <button type="button" onClick={removeThumbnail}>
                   <X className="w-5 h-5 text-red-500" />
                 </button>
               </div>
@@ -69,15 +71,14 @@ function UpdateNews() {
 
             <input
               type="file"
-              accept="video/*"
-              onChange={handleVideoChange}
+              accept="image/*"
+              onChange={handleThumbnailChange}
               className="mt-4 block w-full text-sm text-gray-600
                 file:mr-4 file:py-2 file:px-4 file:rounded-full
                 file:border-0 file:text-sm file:font-semibold
                 file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
             />
           </div>
-
           {/* News Information Section */}
           <div className="bg-white p-6 shadow-lg rounded-2xl flex flex-col gap-6">
             <h2 className="text-xl font-bold text-center mb-4">
@@ -86,14 +87,25 @@ function UpdateNews() {
 
             {/* Title */}
             <div className="input-group">
-              <label className="btn btn-input w-[7em]">Title</label>
+              <label className="btn btn-input w-[7em]">Title-en</label>
               <input
-                name="title"
-                value={formData.title}
+                name="title_en"
+                value={formData.title_en}
                 onChange={handleChange}
-                placeholder="Add Title ..."
+                placeholder="Enter Title English ..."
                 type="text"
-                className={`input ${errors.title ? "border-red-500 border" : ""}`}
+                className={`input ${errors.title_en ? "border-red-500 border" : ""}`}
+              />
+            </div>
+            <div className="input-group">
+              <label className="btn btn-input w-[7em]">Title-ar</label>
+              <input
+                name="title_ar"
+                value={formData.title_ar}
+                onChange={handleChange}
+                placeholder="Enter Title Arabic ..."
+                type="text"
+                className={`input ${errors.title_ar ? "border-red-500 border" : ""}`}
               />
             </div>
 
@@ -120,7 +132,7 @@ function UpdateNews() {
                       <span className="truncate">{file.name}</span>
                       <button
                         type="button"
-                        onClick={() => removeImage(index)}
+                        onClick={() => removeImage(file.name)}
                         className="text-red-500 hover:text-red-700"
                       >
                         ✕
@@ -130,43 +142,104 @@ function UpdateNews() {
                 </ul>
               )}
             </div>
+            <div className="flex items-center gap-3 mb-4">
+              <input
+                type="checkbox"
+                name="isVideo"
+                checked={formData.isVideo}
+                onChange={handleChange}
+                className="checkbox checkbox-primary"
+                id="isVideo"
+              />
+              <label htmlFor="isVideo" className="font-medium">
+                video link
+              </label>
+            </div>
+
+            {formData.isVideo && (
+              <div className="input-group mb-6">
+                <label className="btn btn-input w-[10em]">video link</label>
+                <input
+                  name="videoUrl"
+                  value={formData.videoUrl}
+                  onChange={handleChange}
+                  placeholder="enter video url"
+                  type="url"
+                  className={`input ${errors.videoUrl ? "border-red-500" : ""}`}
+                />
+              </div>
+            )}
           </div>
         </div>
 
         {/* Content Editor */}
-        <div
-          className={`bg-white p-6 shadow-lg rounded-2xl mt-8 ${
-            errors.content ? "border border-red-500" : ""
-          }`}
-        >
-          <h2 className="text-xl font-bold mb-4">Content</h2>
-          <ReactQuill
-            value={formData.content}
-            onChange={handleContentChange}
-            modules={{
-              toolbar: [
-                [{ header: [1, 2, false] }],
-                ["bold", "italic", "underline", "strike"],
-                [{ list: "ordered" }, { list: "bullet" }],
-                ["link", "image"],
-                ["clean"],
-              ],
-            }}
-            formats={[
-              "header",
-              "bold",
-              "italic",
-              "underline",
-              "strike",
-              "list",
-              "bullet",
-              "link",
-              "image",
-            ]}
-            className="bg-white text-black min-h-[400px]"
-          />
-        </div>
+        <div className="grid grid-cols-2">
+          <div
+            className={`bg-white p-6 shadow-lg rounded-2xl mt-8 ${
+              errors.content_en ? "border border-red-500" : ""
+            }`}
+          >
+            <h2 className="text-xl font-bold mb-4">Content-en</h2>
+            <ReactQuill
+              value={formData.content_en}
+              onChange={handleContentChangeEn}
+              modules={{
+                toolbar: [
+                  [{ header: [1, 2, false] }],
+                  ["bold", "italic", "underline", "strike"],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["link", "image"],
+                  ["clean"],
+                ],
+              }}
+              formats={[
+                "header",
+                "bold",
+                "italic",
+                "underline",
+                "strike",
+                "list",
+                "bullet",
+                "link",
+                "image",
+              ]}
+              className="bg-white text-black min-h-[400px]"
+            />
+          </div>
 
+          <div
+            className={`bg-white p-6 shadow-lg rounded-2xl mt-8 ${
+              errors.content_ar ? "border border-red-500" : ""
+            }`}
+          >
+            <h2 className="text-xl font-bold mb-4">Content-ar</h2>
+            <ReactQuill
+              value={formData.content_ar}
+              onChange={handleContentChangeAr}
+              modules={{
+                toolbar: [
+                  [{ header: [1, 2, false] }],
+                  ["bold", "italic", "underline", "strike"],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["link", "image"],
+                  ["clean"],
+                ],
+              }}
+              formats={[
+                "header",
+                "bold",
+                "italic",
+                "underline",
+                "strike",
+                "list",
+                "bullet",
+                "link",
+                "image",
+              ]}
+              className="bg-white text-black min-h-[400px]"
+            />
+          </div>
+        </div>
         {/* Submit Button */}
         <div className="mt-6 flex justify-end">
           <button

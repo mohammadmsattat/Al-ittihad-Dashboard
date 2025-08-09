@@ -106,10 +106,10 @@ const NewsList = () => {
                           </span>
                         </td>
                         <td>
-                          <img src={item?.photo} />
+                          <img src={item?.photo} className="w-[4em] " />
                         </td>
 
-                        <td>{item.title} </td>
+                        <td>{item.titleEN} </td>
 
                         <td>{FormatTime(item?.createdAt)}</td>
 
