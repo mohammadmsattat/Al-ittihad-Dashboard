@@ -48,7 +48,7 @@ console.log(matchData);
     isLoading: getTeamLoading,
     error: getTeamError,
     isError: errorTeam,
-  } = useGetAllTeamQuery("");
+  } = useGetAllTeamQuery("limit=1000");
 
   const navigate = useNavigate();
 

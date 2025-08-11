@@ -7,7 +7,7 @@ export const PRIMARY_MENU_SIDEBAR = [
 export const SECONDARY_MENU_SIDEBAR = [
   {
     title: "News",
-    icon: "note-2",
+    icon: "message-text",
     children: [
       {
         title: "All News",
@@ -17,7 +17,7 @@ export const SECONDARY_MENU_SIDEBAR = [
   },
   {
     title: "Event",
-    icon: "user-edit",
+    icon: "calendar-tick",
     children: [
       {
         title: "All Events",
@@ -27,7 +27,7 @@ export const SECONDARY_MENU_SIDEBAR = [
   },
   {
     title: "Match",
-    icon: "category",
+    icon: "cup",
     children: [
       {
         title: "All Matches",
@@ -37,7 +37,7 @@ export const SECONDARY_MENU_SIDEBAR = [
   },
   {
     title: "Team",
-    icon: "category",
+    icon: "people",
     children: [
       {
         title: "All Teams",
@@ -47,7 +47,7 @@ export const SECONDARY_MENU_SIDEBAR = [
   },
   {
     title: "TeamMember",
-    icon: "category",
+    icon: "courier-express",
     children: [
       {
         title: "All TeamMembers",
@@ -57,7 +57,7 @@ export const SECONDARY_MENU_SIDEBAR = [
   },
   {
     title: "Membership",
-    icon: "category",
+    icon: "user-tick",
     children: [
       {
         title: "All Membership",
@@ -67,7 +67,7 @@ export const SECONDARY_MENU_SIDEBAR = [
   },
   {
     title: "Investment",
-    icon: "category",
+    icon: "graph-up",
     children: [
       {
         title: "All Investment",

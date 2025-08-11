@@ -2,20 +2,37 @@ import { Container } from "@mui/material";
 import { ToastContainer } from "react-toastify";
 import useUpdateMembership from "../hooks/useUpdateMembership";
 
+function InputField({
+  label,
+  name,
+  value,
+  onChange,
+  type = "text",
+  error,
+  placeholder,
+}) {
+  return (
+    <div className="input-group">
+      <label className="btn btn-input w-[9em]">{label}</label>
+      <input
+        name={name}
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className={`input ${error ? "border-red-500 border" : ""}`}
+      />
+    </div>
+  );
+}
+
 function UpdateMembership() {
-  const {
-    formData,
-    handleChange,
-    handleSubmit,
-    isLoading,
-    errors,
-  } = useUpdateMembership();
+  const { formData, handleChange, handleSubmit, isLoading, errors } =
+    useUpdateMembership();
 
   return (
     <Container maxWidth="md" className="my-12">
       <form onSubmit={handleSubmit} className="space-y-8">
-
-   
         <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
           <h2 className="text-lg font-semibold text-gray-700">Membership Details</h2>
 
@@ -50,18 +67,21 @@ function UpdateMembership() {
               placeholder="Enter price"
             />
 
-            <InputField
-              label="Benefits"
-              name="benefits"
-              value={formData.benefits}
-              onChange={handleChange}
-              error={errors.benefits}
-              placeholder="List benefits"
-            />
+            <div className="input-group">
+              <label className="btn btn-input w-[10em]">Benefits</label>
+              <textarea
+                name="benefits"
+                value={formData.benefits}
+                onChange={handleChange}
+                placeholder="List benefits"
+                className={`textarea h-[10em] mb-5 ${
+                  errors.benefits ? "border-red-500 border" : ""
+                }`}
+              />
+            </div>
           </div>
         </div>
 
-   
         <div className="flex justify-end">
           <button
             type="submit"
@@ -73,24 +93,14 @@ function UpdateMembership() {
         </div>
       </form>
 
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar pauseOnHover />
-    </Container>
-  );
-}
-
-function InputField({ label, name, value, onChange, type = "text", error, placeholder }) {
-  return (
-    <div className="flex flex-col">
-      <label className="text-sm font-medium mb-1">{label}</label>
-      <input
-        name={name}
-        value={value}
-        onChange={onChange}
-        type={type}
-        placeholder={placeholder}
-        className={`input ${error ? "border-red-500 border" : ""}`}
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        pauseOnHover
+        draggable
       />
-    </div>
+    </Container>
   );
 }
 

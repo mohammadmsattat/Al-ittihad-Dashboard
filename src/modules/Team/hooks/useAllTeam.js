@@ -2,7 +2,10 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { toast } from "react-toastify";
-import { useDeleteTeamMutation, useGetAllTeamQuery } from "../../../rtk/teamApi/teamApi";
+import {
+  useDeleteTeamMutation,
+  useGetAllTeamQuery,
+} from "../../../rtk/teamApi/teamApi";
 
 const useGetAllTeam = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -25,7 +28,6 @@ const useGetAllTeam = () => {
     refetch,
   } = useGetAllTeamQuery(query);
 
-    
   const [deleteNews] = useDeleteTeamMutation();
 
   const handleDeleteNews = async () => {
@@ -34,13 +36,11 @@ const useGetAllTeam = () => {
         const result = await deleteNews(DeleteId).unwrap();
         toast.success("News item Deleted successfully!");
         setDeleteId();
-        if (result.status === "true") {
-          refetch();
+        if (result.status !== "true") {
+          toast.error("Failed to update news!");
         }
       }
     } catch (err) {
-      toast.error("Failed to update news!");
-
       console.error("delete failed", err);
     }
   };

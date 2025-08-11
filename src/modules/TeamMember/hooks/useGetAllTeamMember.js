@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 
 import { toast } from "react-toastify";
 import {
-  useDeleteTeamMemberMutation, 
+  useDeleteTeamMemberMutation,
   useGetAllTeamMemberQuery,
 } from "../../../rtk/teamMemberApi/teamMemberApi";
 
@@ -28,19 +28,14 @@ const useGetAllTeamMember = () => {
     refetch,
   } = useGetAllTeamMemberQuery(query);
 
-  const [deleteTeamMember] = useDeleteTeamMemberMutation(); 
+  const [deleteTeamMember] = useDeleteTeamMemberMutation();
 
   const handleDeleteTeamMember = async () => {
     try {
       if (DeleteId) {
-        const result = await deleteTeamMember(DeleteId).unwrap(); 
+       await deleteTeamMember(DeleteId).unwrap();
 
-        if (result.status === "true") {
-          toast.success("Team Member Deleted successfully");
-          setDeleteId();
-        } else {
-          toast.error("Failed to Delete!");
-        }
+        toast.success("Team Member Deleted successfully");
       }
     } catch (err) {
       console.error("delete failed", err);
@@ -82,7 +77,7 @@ const useGetAllTeamMember = () => {
     totalPages: TeamMemberData?.pagination?.totalPages || 0,
     searchTerm,
     handleSearch,
-    refetch, 
+    refetch,
   };
 };
 

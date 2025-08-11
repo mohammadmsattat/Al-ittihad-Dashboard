@@ -9,8 +9,7 @@ export const useAddTeamMember = () => {
     data: TeamData,
     isLoading: getTeamLoading,
     error: getTeamError,
-  } = useGetAllTeamQuery();
-  
+  } = useGetAllTeamQuery("limit=1000");
 
   const [addTeamMember, { isLoading, error }] = useCreateTeamMemberMutation();
   const navigate = useNavigate();
@@ -34,10 +33,10 @@ export const useAddTeamMember = () => {
     },
   });
 
-  const [thumbnail, setThumbnail] = useState(null); 
-  const [preview, setPreview] = useState(null); 
+  const [thumbnail, setThumbnail] = useState(null);
+  const [preview, setPreview] = useState(null);
 
-  const [errors, setErrors] = useState({}); 
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -76,15 +75,67 @@ export const useAddTeamMember = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.nameAR.trim()) newErrors.nameAR = true;
-    if (!formData.nameEN.trim()) newErrors.nameEN = true;
-    if (!formData.team) newErrors.team = true;
-    if (!thumbnail) newErrors.thumbnail = true;
+    let firstEmptyFieldName = "";
+
+    if (!thumbnail) {
+      newErrors.thumbnail = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Profile Photo";
+    }
+
+    if (!formData.nameEN.trim()) {
+      newErrors.nameEN = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Name (English)";
+    }
+
+    if (!formData.nameAR.trim()) {
+      newErrors.nameAR = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Name (Arabic)";
+    }
+
+    if (!formData.team) {
+      newErrors.team = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Team";
+    }
+
+    if (!formData.role.trim()) {
+      newErrors.role = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Role";
+    }
+
+    if (!formData.position.trim()) {
+      newErrors.position = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Position";
+    }
+
+    if (!formData.number.toString().trim()) {
+      newErrors.number = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Number";
+    }
+
+    if (!formData.ageGroup.trim()) {
+      newErrors.ageGroup = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Age Group";
+    }
+
+    if (!formData.bioEN.trim()) {
+      newErrors.bioEN = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Bio (English)";
+    }
+
+    if (!formData.bioAR.trim()) {
+      newErrors.bioAR = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Bio (Arabic)";
+    }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
 
+    if (Object.keys(newErrors).length > 0) {
+      toast.error(`Please fill the field: ${firstEmptyFieldName}`);
+      return false;
+    }
+
+    return true;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -92,7 +143,6 @@ export const useAddTeamMember = () => {
 
     const formDataToSend = new FormData();
 
- 
     formDataToSend.append("nameAR", formData.nameAR);
     formDataToSend.append("nameEN", formData.nameEN);
     formDataToSend.append("role", formData.role);
@@ -112,13 +162,13 @@ export const useAddTeamMember = () => {
 
     try {
       await addTeamMember(formDataToSend).unwrap();
-      toast.success("تم حفظ عضو الفريق بنجاح");
+      toast.success("Team Member Added successfully");
 
       setTimeout(() => {
-        navigate("/all-teamMember"); 
+        navigate("/all-teamMember");
       }, 2000);
     } catch (err) {
-      toast.error("فشل في إضافة عضو الفريق!");
+      toast.error("Failed to Add Team Membeer!");
       console.error("فشل في الإضافة:", err);
     }
   };
@@ -133,7 +183,7 @@ export const useAddTeamMember = () => {
     isLoading,
     error,
     errors,
-    TeamData, 
+    TeamData,
     getTeamLoading,
     getTeamError,
   };

@@ -77,13 +77,16 @@ const TeamList = () => {
           <div className="card-body">
             <div data-datatable="true">
               <div className="scrollable-x-auto">
-                <table className="table table-auto table-border" id="grid_table">
+                <table
+                  className="table table-auto table-border"
+                  id="grid_table"
+                >
                   <thead>
                     <tr>
                       <th>#</th>
                       <th>Image</th>
-                      <th>Name (EN)</th>
-                      <th>الاسم (AR)</th>
+                      <th>Name </th>
+                      {/* <th>الاسم (AR)</th> */}
                       <th>Sport</th>
                       <th>Members</th>
                       <th>Wins</th>
@@ -104,16 +107,32 @@ const TeamList = () => {
                           <img
                             src={item?.photo}
                             alt="team"
-                            style={{ width: "5em", height: "3.5em", objectFit: "cover" }}
+                            style={{
+                              width: "5em",
+                              height: "3.5em",
+                              objectFit: "cover",
+                            }}
                           />
                         </td>
                         <td>{item.nameEN}</td>
-                        <td>{item.nameAR}</td>
+                        {/* <td>{item.nameAR}</td> */}
                         <td>{item.sport}</td>
                         <td>{item.teamMember?.length}</td>
-                        <td>{item.stats?.wins ?? 0}</td>
-                        <td>{item.stats?.losses ?? 0}</td>
-                        <td>{item.stats?.draws ?? 0}</td>
+                        <td>
+                          <span className="badge  badge-outline badge-success ">
+                            {item.stats?.wins ?? 0}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="badge  badge-outline badge-danger ">
+                            {item.stats?.losses ?? 0}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="badge  badge-outline badge-primary ">
+                            {item.stats?.draws ?? 0}
+                          </span>
+                        </td>
                         <td>
                           <div className="flex gap-2 items-center">
                             <Link to={`/team-detail/${item._id}`}>
@@ -147,7 +166,10 @@ const TeamList = () => {
                 </table>
 
                 <div className="card-footer flex justify-center md:justify-between flex-col md:flex-row gap-3 text-gray-600 text-2sm font-medium">
-                  <PageSizeSelector perPage={perPage} setPerPage={onPerPageChange} />
+                  <PageSizeSelector
+                    perPage={perPage}
+                    setPerPage={onPerPageChange}
+                  />
                   <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}

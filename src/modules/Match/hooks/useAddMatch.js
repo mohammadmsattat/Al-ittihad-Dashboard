@@ -10,7 +10,7 @@ export const useAddMatch = () => {
     data: TeamData,
     isLoading: getTeamLoading,
     error: getTeamError,
-  } = useGetAllTeamQuery("");
+  } = useGetAllTeamQuery("limit=1000");
 
   const navigate = useNavigate();
 

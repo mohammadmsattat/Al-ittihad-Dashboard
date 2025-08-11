@@ -91,14 +91,37 @@ const useUpdateTeam = () => {
     setPreview(null);
   };
 
-  // ✅ Validate required fields
   const validate = () => {
     const newErrors = {};
-    if (!formData.nameAR.trim()) newErrors.nameAR = true;
-    if (!formData.nameEN.trim()) newErrors.nameEN = true;
-    if (!formData.sport.trim()) newErrors.sport = true;
+    let firstEmptyFieldName = "";
+
+    if (!thumbnail && !preview) {
+      newErrors.photo = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Team Logo";
+    }
+
+    if (!formData.nameEN.trim()) {
+      newErrors.nameEN = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Name (English)";
+    }
+    if (!formData.nameAR.trim()) {
+      newErrors.nameAR = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Name (Arabic)";
+    }
+
+    if (!formData.sport.trim()) {
+      newErrors.sport = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Sport";
+    }
+
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    if (Object.keys(newErrors).length > 0) {
+      toast.error(`Please fill the field: ${firstEmptyFieldName}`);
+      return false;
+    }
+
+    return true;
   };
 
   // ✅ Submit form

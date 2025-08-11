@@ -40,13 +40,13 @@ const useAddMembership = () => {
 
     try {
       await createMembership(formData).unwrap();
-      toast.success("تم حفظ العضوية بنجاح");
+      toast.success("Membership Added Successfully!");
 
       setTimeout(() => {
         navigate("/all-membership"); 
       }, 2000);
     } catch (err) {
-      toast.error("فشل في إضافة العضوية!");
+      toast.error("Failed To Add Membership");
       console.error("فشل في إضافة العضوية:", err);
     }
   };

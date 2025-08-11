@@ -16,124 +16,161 @@ function UpdateTeam() {
   } = useUpdateTeam();
 
   return (
-    <Container maxWidth="md" className="my-12">
-      <form onSubmit={handleSubmit} className="space-y-8">
+    <Container maxWidth="lg" className="my-10">
+      <form onSubmit={handleSubmit}>
+        <div className="grid grid-cols-12 gap-5">
+          {/* Photo Upload */}
+          <div className="bg-white p-6 shadow-lg rounded-2xl mb-6 col-span-4">
+            <h2 className="text-xl font-bold text-center mb-4">Team Logo</h2>
 
-     
-        <div className="bg-white p-6 rounded-xl shadow-md">
-          <h2 className="text-lg font-semibold mb-4 text-gray-700">شعار الفريق</h2>
-
-          <div className="flex items-center gap-4">
             <div
-              className={`w-32 h-32 rounded-md border-2 border-dashed flex items-center justify-center overflow-hidden ${
+              className={`w-full h-48 bg-gray-100 border-2 border-dashed rounded-lg flex items-center justify-center overflow-hidden ${
                 errors.photo ? "border-red-500" : "border-gray-300"
               }`}
             >
               {preview ? (
-                <img src={preview} alt="Preview" className="object-cover w-full h-full" />
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="object-contain h-full w-full"
+                />
               ) : (
-                <span className="text-gray-400 text-sm">لا توجد صورة</span>
+                <span className="text-gray-400">No Image</span>
               )}
             </div>
 
-            <div className="flex-1">
+            {preview && (
+              <div className="flex justify-between items-center mt-2 bg-gray-100 p-2 border rounded-md">
+                <span className="text-sm truncate max-w-[80%]">
+                  Image Selected
+                </span>
+                <button type="button" onClick={removeThumbnail}>
+                  <X className="w-5 h-5 text-red-500" />
+                </button>
+              </div>
+            )}
+
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleThumbnailChange}
+              className="mt-4 block w-full text-sm text-gray-600
+                file:mr-4 file:py-2 file:px-4 file:rounded-full
+                file:border-0 file:text-sm file:font-semibold
+                file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
+            />
+          </div>
+
+          {/* Team Info Section */}
+          <div className="bg-white p-6 shadow-lg rounded-2xl mb-6 col-span-8">
+            <h2 className="text-xl font-bold text-center mb-4">
+              Team Information
+            </h2>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="input-group">
+                <label className="btn btn-input w-[9em]">Name-en</label>
+                <input
+                  name="nameEN"
+                  value={formData.nameEN}
+                  onChange={handleChange}
+                  type="text"
+                  placeholder="Enter the English name..."
+                  className={`input ${errors.nameEN ? "border-red-500" : ""}`}
+                />
+              </div>
+              <div className="input-group">
+                <label className="btn btn-input w-[9em]"> Name-ar</label>
+                <input
+                  name="nameAR"
+                  value={formData.nameAR}
+                  onChange={handleChange}
+                  type="text"
+                  placeholder="Enter the Arabic name..."
+                  className={`input ${errors.nameAR ? "border-red-500" : ""}`}
+                />
+              </div>
+
+              <div className="input-group">
+                <label className="btn btn-input w-[9em]">Sport</label>
+                <input
+                  name="sport"
+                  value={formData.sport}
+                  onChange={handleChange}
+                  type="text"
+                  placeholder="Enter the sport..."
+                  className={`input ${errors.sport ? "border-red-500" : ""}`}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Section */}
+        <div className="bg-white p-6 shadow-lg rounded-2xl mb-6">
+          <h2 className="text-xl font-bold text-center mb-4">
+            Team Statistics
+          </h2>
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="input-group">
+              <label className="btn btn-input w-[9em]">Wins</label>
               <input
-                type="file"
-                accept="image/*"
-                onChange={handleThumbnailChange}
-                className="block w-full text-sm text-gray-600
-                  file:mr-4 file:py-1 file:px-3 file:rounded-full
-                  file:border-0 file:text-sm file:font-medium
-                  file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
-              />
-
-              {preview && (
-                <div className="flex justify-between items-center mt-2 bg-gray-100 p-2 border rounded">
-                  <span className="text-sm text-gray-600 truncate max-w-[80%]">تم اختيار صورة</span>
-                  <button type="button" onClick={removeThumbnail}>
-                    <X className="w-4 h-4 text-red-500" />
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-    
-        <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
-          <h2 className="text-lg font-semibold text-gray-700">معلومات الفريق</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <InputField
-              label="اسم الفريق (عربي)"
-              name="nameAR"
-              value={formData.nameAR}
-              onChange={handleChange}
-              error={errors.nameAR}
-            />
-            <InputField
-              label="Team Name (English)"
-              name="nameEN"
-              value={formData.nameEN}
-              onChange={handleChange}
-              error={errors.nameEN}
-            />
-            <InputField
-              label="Sport"
-              name="sport"
-              value={formData.sport}
-              onChange={handleChange}
-              error={errors.sport}
-            />
-          </div>
-        </div>
-
-      
-        <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
-          <h2 className="text-lg font-semibold text-gray-700">إحصائيات الفريق</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {["wins", "losses", "draws"].map((statKey) => (
-              <InputField
-                key={statKey}
-                label={statKey.charAt(0).toUpperCase() + statKey.slice(1)}
-                name={statKey}
-                value={formData.stats?.[statKey] ?? ""}
+                name="wins"
+                value={formData.stats?.wins ?? ""}
                 onChange={handleChange}
                 type="number"
+                placeholder="Number of wins"
+                className="input"
               />
-            ))}
+            </div>
+            <div className="input-group">
+              <label className="btn btn-input w-[9em]">Losses</label>
+              <input
+                name="losses"
+                value={formData.stats?.losses ?? ""}
+                onChange={handleChange}
+                type="number"
+                placeholder="Number of losses"
+                className="input"
+              />
+            </div>
+            <div className="input-group">
+              <label className="btn btn-input w-[9em]">Draws</label>
+              <input
+                name="draws"
+                value={formData.stats?.draws ?? ""}
+                onChange={handleChange}
+                type="number"
+                placeholder="Number of draws"
+                className="input"
+              />
+            </div>
           </div>
         </div>
 
-        <div className="flex justify-end">
+        {/* Submit Button */}
+        <div className="mt-6 flex justify-end">
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg disabled:opacity-50"
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
             {isLoading ? "Saving..." : "Update Team"}
           </button>
         </div>
       </form>
 
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar pauseOnHover />
-    </Container>
-  );
-}
-
-function InputField({ label, name, value, onChange, type = "text", error }) {
-  return (
-    <div className="flex flex-col">
-      <label className="text-sm font-medium mb-1">{label}</label>
-      <input
-        name={name}
-        value={value}
-        onChange={onChange}
-        type={type}
-        className={`input ${error ? "border-red-500 border" : ""}`}
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        rtl={false}
       />
-    </div>
+    </Container>
   );
 }
 

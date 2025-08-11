@@ -7,7 +7,6 @@ const useAddTeam = () => {
   const [createTeam, { isLoading, error }] = useCreateTeamMutation();
   const navigate = useNavigate();
 
-  // ✅ بيانات الفريق الأساسية
   const [formData, setFormData] = useState({
     nameAR: "",
     nameEN: "",
@@ -19,16 +18,14 @@ const useAddTeam = () => {
     },
   });
 
-  const [thumbnail, setThumbnail] = useState(null); // ✅ صورة الفريق
-  const [preview, setPreview] = useState(null); // ✅ معاينة للصورة
+  const [thumbnail, setThumbnail] = useState(null);
+  const [preview, setPreview] = useState(null);
 
-  const [errors, setErrors] = useState({}); // ✅ لتخزين الأخطاء في النموذج
+  const [errors, setErrors] = useState({});
 
-  // ✅ التعامل مع تغييرات الحقول
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // التعامل مع الحقول داخل stats
     if (["wins", "losses", "draws"].includes(name)) {
       setFormData((prev) => ({
         ...prev,
@@ -44,7 +41,6 @@ const useAddTeam = () => {
     setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
-  // ✅ رفع صورة الفريق
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -54,7 +50,6 @@ const useAddTeam = () => {
     }
   };
 
-  // ✅ إزالة الصورة المرفوعة
   const removeThumbnail = () => {
     setThumbnail(null);
     if (preview) {
@@ -63,19 +58,38 @@ const useAddTeam = () => {
     }
   };
 
-  // ✅ التحقق من صحة الحقول
   const validate = () => {
     const newErrors = {};
-    if (!formData.nameAR.trim()) newErrors.nameAR = true;
-    if (!formData.nameEN.trim()) newErrors.nameEN = true;
-    if (!formData.sport.trim()) newErrors.sport = true;
-    if (!thumbnail) newErrors.photo = true;
+    let firstEmptyFieldName = "";
+    if (!thumbnail) {
+      newErrors.photo = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Team Logo";
+    }
+
+    if (!formData.nameEN.trim()) {
+      newErrors.nameEN = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Name (English)";
+    }
+    if (!formData.nameAR.trim()) {
+      newErrors.nameAR = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Name (Arabic)";
+    }
+
+    if (!formData.sport.trim()) {
+      newErrors.sport = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Sport";
+    }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    if (Object.keys(newErrors).length > 0) {
+      toast.error(`Please fill the field: ${firstEmptyFieldName}`);
+      return false;
+    }
+
+    return true;
   };
 
-  // ✅ إرسال النموذج
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
@@ -94,13 +108,13 @@ const useAddTeam = () => {
 
     try {
       await createTeam(formDataToSend).unwrap();
-      toast.success("تم حفظ الفريق بنجاح");
+      toast.success("Team Added successfully");
 
       setTimeout(() => {
         navigate("/all-team");
       }, 2000);
     } catch (err) {
-      toast.error("فشل في إضافة الفريق!");
+      toast.error("Failed to Add Team!");
       console.error("فشل في إضافة الفريق:", err);
     }
   };
