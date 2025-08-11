@@ -52,7 +52,7 @@ const SidebarHeader = forwardRef((props, ref) => {
       <div className="flex items-center gap-2.5 px-3.5 h-[70px]">
         <Link to="/">
           <img
-            src={toAbsoluteUrl("/public/ball-logo.png")}
+            src={toAbsoluteUrl("/public/logo.gif")}
             alt="Logo"
             className="dark:hidden h-[42px]"
           />

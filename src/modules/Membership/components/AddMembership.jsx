@@ -2,10 +2,18 @@ import { Container } from "@mui/material";
 import { ToastContainer } from "react-toastify";
 import useAddMembership from "../hooks/useAddMembership";
 
-function InputField({ label, name, value, onChange, type = "text", error, placeholder }) {
+function InputField({
+  label,
+  name,
+  value,
+  onChange,
+  type = "text",
+  error,
+  placeholder,
+}) {
   return (
-    <div className="flex flex-col">
-      <label className="text-sm font-medium mb-1">{label}</label>
+    <div className="input-group">
+      <label className="btn btn-input w-[9em]">{label}</label>
       <input
         name={name}
         type={type}
@@ -19,20 +27,16 @@ function InputField({ label, name, value, onChange, type = "text", error, placeh
 }
 
 function AddMembership() {
-  const {
-    formData,
-    handleChange,
-    handleSubmit,
-    isLoading,
-    errors,
-  } = useAddMembership();
+  const { formData, handleChange, handleSubmit, isLoading, errors } =
+    useAddMembership();
 
   return (
     <Container maxWidth="md" className="my-12">
       <form onSubmit={handleSubmit} className="space-y-8">
-        
         <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
-          <h2 className="text-lg font-semibold text-gray-700">Membership Details</h2>
+          <h2 className="text-lg font-semibold text-gray-700">
+            Membership Details
+          </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <InputField
@@ -41,7 +45,7 @@ function AddMembership() {
               value={formData.type}
               onChange={handleChange}
               error={errors.type}
-              placeholder="مثال: VIP, Standard"
+              placeholder="e.g. VIP, Standard"
             />
 
             <InputField
@@ -51,7 +55,7 @@ function AddMembership() {
               value={formData.price}
               onChange={handleChange}
               error={errors.price}
-              placeholder="أدخل السعر"
+              placeholder="Enter the price"
             />
           </div>
 
@@ -62,17 +66,17 @@ function AddMembership() {
               value={formData.duration}
               onChange={handleChange}
               error={errors.duration}
-              placeholder="مثال: 1 Month, 1 Year"
+              placeholder="e.g. 1 Month, 1 Year"
             />
 
-            <div className="flex flex-col">
-              <label className="text-sm font-medium mb-1">Benefits</label>
+            <div className="input-group">
+              <label className="btn btn-input w-[10em] ">Benefits</label>
               <textarea
                 name="benefits"
                 value={formData.benefits}
                 onChange={handleChange}
-                placeholder="اكتب مزايا العضوية هنا..."
-                className={`input min-h-[100px] ${errors.benefits ? "border-red-500 border" : ""}`}
+                placeholder="Write membership benefits here..."
+                className={`textarea h-[10em] mb-5 ${errors.benefits ? "border-red-500 border" : ""}`}
               />
             </div>
           </div>

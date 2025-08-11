@@ -33,14 +33,12 @@ const useGetAllMembership = () => {
     try {
       if (DeleteId) {
         const result = await deleteMembership(DeleteId).unwrap();
-        toast.success("تم حذف العضوية بنجاح!");
+        toast.success("Membership Deleted successfully");
         setDeleteId();
-        if (result.status === "true") {
-          refetch();
-        }
+     
       }
     } catch (err) {
-      toast.error("فشل في حذف العضوية!");
+      toast.error("Failed To Delete Membership");
       console.error("delete failed", err);
     }
   };

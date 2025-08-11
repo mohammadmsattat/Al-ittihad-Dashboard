@@ -5,7 +5,8 @@ import { useCreateInvestmentMutation } from "../../../rtk/investmentApi/invesmet
 
 const useAddInvestment = () => {
   const navigate = useNavigate();
-  const [createInvestment, { isLoading, error }] = useCreateInvestmentMutation();
+  const [createInvestment, { isLoading, error }] =
+    useCreateInvestmentMutation();
 
   const [formData, setFormData] = useState({
     titleAR: "",
@@ -27,33 +28,58 @@ const useAddInvestment = () => {
     setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
-  // ✅ التحقق من صحة البيانات
   const validate = () => {
     const newErrors = {};
-    if (!formData.titleAR.trim()) newErrors.titleAR = true;
-    if (!formData.titleEN.trim()) newErrors.titleEN = true;
-    if (!formData.descriptionAR.trim()) newErrors.descriptionAR = true;
-    if (!formData.descriptionEN.trim()) newErrors.descriptionEN = true;
-    if (!formData.deadline) newErrors.deadline = true;
-    if (!formData.status.trim()) newErrors.status = true;
+    let firstEmptyFieldName = "";
 
+    if (!formData.titleEN.trim()) {
+      newErrors.titleEN = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "title (English)";
+    }
+    if (!formData.titleAR.trim()) {
+      newErrors.titleAR = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "title (Arabic)";
+    }
+
+    if (!formData.deadline.trim()) {
+      newErrors.deadline = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "deadline";
+    }
+    if (!formData.status.trim()) {
+      newErrors.status = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "status";
+    }
+
+    if (!formData.descriptionEN.trim()) {
+      newErrors.descriptionEN = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Description (English)";
+    }
+    if (!formData.descriptionAR.trim()) {
+      newErrors.descriptionAR = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Description (Arabic)";
+    }
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    if (Object.keys(newErrors).length > 0) {
+      toast.error(`Please fill the field: ${firstEmptyFieldName}`);
+      return false;
+    }
+
+    return true;
   };
 
-  // ✅ إرسال البيانات
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     try {
       await createInvestment(formData).unwrap();
-      toast.success("تم إضافة الاستثمار بنجاح");
+      toast.success("Investment Added Successfully!");
       setTimeout(() => {
         navigate("/all-investment");
       }, 2000);
     } catch (err) {
-      toast.error("فشل في إضافة الاستثمار!");
+      toast.error("Failed To Add Investment!");
       console.error("فشل في إضافة الاستثمار:", err);
     }
   };

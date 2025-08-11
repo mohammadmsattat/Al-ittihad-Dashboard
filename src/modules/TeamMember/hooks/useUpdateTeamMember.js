@@ -116,11 +116,66 @@ export const useUpdateTeamMember = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.nameAR.trim()) newErrors.nameAR = true;
-    if (!formData.nameEN.trim()) newErrors.nameEN = true;
-    if (!formData.team) newErrors.team = true;
+    let firstEmptyFieldName = "";
+
+    if (!thumbnail && !preview) {
+      newErrors.thumbnail = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Profile Photo";
+    }
+
+    if (!formData.nameEN.trim()) {
+      newErrors.nameEN = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Name (English)";
+    }
+
+    if (!formData.nameAR.trim()) {
+      newErrors.nameAR = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Name (Arabic)";
+    }
+
+    if (!formData.team) {
+      newErrors.team = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Team";
+    }
+
+    if (!formData.role.trim()) {
+      newErrors.role = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Role";
+    }
+
+    if (!formData.position.trim()) {
+      newErrors.position = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Position";
+    }
+
+    if (!formData.number.toString().trim()) {
+      newErrors.number = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Number";
+    }
+
+    if (!formData.ageGroup.trim()) {
+      newErrors.ageGroup = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Age Group";
+    }
+
+    if (!formData.bioEN.trim()) {
+      newErrors.bioEN = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Bio (English)";
+    }
+
+    if (!formData.bioAR.trim()) {
+      newErrors.bioAR = true;
+      if (!firstEmptyFieldName) firstEmptyFieldName = "Bio (Arabic)";
+    }
+
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    if (Object.keys(newErrors).length > 0) {
+      toast.error(`Please fill the field: ${firstEmptyFieldName}`);
+      return false;
+    }
+
+    return true;
   };
 
   const handleSubmit = async (e) => {
@@ -169,7 +224,7 @@ export const useUpdateTeamMember = () => {
     thumbnail,
     errors,
     TeamData,
-    getError,
+    getError :isMemberLoading,
     getTeamError,
   };
 };
