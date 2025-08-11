@@ -24,6 +24,12 @@ import AddMatch from "../modules/Match/components/AddMatch";
 import UpdateMatch from "../modules/Match/components/UpdateMatch";
 import AddInvestment from "../modules/Investment/components/AddInvestment";
 import UpdateInvestment from "../modules/Investment/components/UpdateInvestment";
+import AddTeam from "../modules/Team/components/AddTeam";
+import UpdateTeam from "../modules/Team/components/UpdateTeam";
+import ViewTeam from "../modules/Team/components/ViewTeam";
+import ViewNews from "../modules/News/components/ViewNews";
+import ViewEvent from "../modules/Events/components/ViewEvent";
+import ViewMatch from "../modules/Match/components/ViewMatch";
 
 //dashboard
 
@@ -40,7 +46,9 @@ const AppRoutingSetup = () => {
         <Route path="/all-matches" element={<MatchList />} />
         <Route path="/add-match" element={<AddMatch />} />
         <Route path="/update-match/:id" element={<UpdateMatch />} />
-        <Route path="/all-team" element={<TeamList />} />
+        <Route path="/all-team" element={<TeamList />} />{" "}
+        <Route path="/add-team" element={<AddTeam />} />
+        <Route path="/update-team/:id" element={<UpdateTeam />} />
         <Route path="/all-teamMember" element={<TeamMemberList />} />
         <Route path="/add-membership" element={<AddMembership />} />
         <Route path="/update-membership/:id" element={<UpdateMembership />} />
@@ -53,6 +61,10 @@ const AppRoutingSetup = () => {
         <Route path="/all-investment" element={<InvestmentList />} />
         <Route path="/add-investment" element={<AddInvestment />} />
         <Route path="/update-investment/:id" element={<UpdateInvestment />} />
+        <Route path="/team-detail/:id" element={<ViewTeam />} />
+        <Route path="/news-details/:id" element={<ViewNews />} />
+        <Route path="/event-detailes/:id" element={<ViewEvent />} />
+        <Route path="/match-detailes/:id" element={<ViewMatch />} />
       </Route>
       <Route path="error/*" element={<ErrorsRouting />} />
       <Route path="auth/*" element={<AuthPage />} />
