@@ -208,19 +208,14 @@ console.log(TeamData);
               <label className="btn btn-input w-[9em]">Away Team</label>
 
               <div className="relative w-full">
-                <select
-                  name="awayTeam"
-                  value={formData.awayTeam}
-                  onChange={handleChange}
-                  className={`input appearance-none pr-10 ${errors.awayTeam ? "border-red-500" : ""}`}
-                >
-                  <option value="">Select Away Team</option>
-                  {TeamData?.data.map((team) => (
-                    <option key={team._id} value={team._id}>
-                      {team.nameEN}
-                    </option>
-                  ))}
-                </select>
+             <input
+                name="awayTeam"
+                value={formData.awayTeam}
+                onChange={handleChange}
+                type="text"
+                placeholder="Enter Away Team..."
+                className={`input ${errors.awayTeam ? "border-red-500" : ""}`}
+              />
 
                 <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-500">
                   <svg

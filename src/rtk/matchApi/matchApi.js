@@ -53,6 +53,19 @@ export const MatchApi = createApi({
       }),
       invalidatesTags: ["Match"],
     }),
+
+    importMatchTable: builder.mutation({
+      query: (file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        return {
+          url: `${MatchEndPoint}/matchTable`,
+          method: "POST",
+          body: formData,
+        };
+      },
+      invalidatesTags: ["Match"],
+    }),
   }),
 });
 
@@ -62,4 +75,5 @@ export const {
   useGetAllMatchQuery,
   useGetOneMatchQuery,
   useUpdateMatchMutation,
+  useImportMatchTableMutation,  
 } = MatchApi;

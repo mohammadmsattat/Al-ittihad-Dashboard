@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import {
   useDeleteMatchMutation,
   useGetAllMatchQuery,
+  useImportMatchTableMutation
 } from "../../../rtk/matchApi/matchApi";
 
 const useGetAllMatches = () => {
@@ -29,12 +30,14 @@ const useGetAllMatches = () => {
     refetch,
   } = useGetAllMatchQuery(query);
 
-  const [deleteNews] = useDeleteMatchMutation();
+  const [deleteMatch] = useDeleteMatchMutation();
 
-  const handleDeleteNews = async () => {
+  const [importMatchTable, { isLoading: isImporting }] = useImportMatchTableMutation();
+
+  const handleDeleteMatch = async () => {
     try {
       if (DeleteId) {
-        const result = await deleteNews(DeleteId).unwrap();
+        const result = await deleteMatch(DeleteId).unwrap();
         toast.success("Match Deleted successfully!");
         setDeleteId();
         if (result.status !== "true") {
@@ -43,6 +46,22 @@ const useGetAllMatches = () => {
       }
     } catch (err) {
       console.error("delete failed", err);
+      toast.error("Failed to Delete Match!");
+    }
+  };
+
+  const handleImportMatches = async (file) => {
+    try {
+      if (!file) {
+        toast.error("Please select a file!");
+        return;
+      }
+      await importMatchTable(file).unwrap();
+      toast.success("Matches imported successfully!");
+      refetch();
+    } catch (err) {
+      console.error("Import failed", err);
+      toast.error("Failed to import matches!");
     }
   };
 
@@ -75,11 +94,14 @@ const useGetAllMatches = () => {
     setShow,
     DeleteId,
     setDeleteId,
-    handleDeleteNews,
+    handleDeleteMatch,
+    handleImportMatches,
+    isImporting,
     totalCount: MatchesData?.pagination?.totalItems || 0,
     totalPages: MatchesData?.pagination?.totalPages || 0,
     searchTerm,
     handleSearch,
+    refetch
   };
 };
 
