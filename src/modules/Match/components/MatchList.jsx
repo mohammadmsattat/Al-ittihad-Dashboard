@@ -9,6 +9,8 @@ import PageSizeSelector from "../../../components/Global/PageSizeSelector";
 import Pagination from "../../../components/Global/Pagination";
 import { ToastContainer } from "react-toastify";
 import useGetAllMatches from "../hooks/useGetAllMatches";
+import ExportTemplate from "./ExportTemplate";  
+
 
 const MatchList = () => {
   const {
@@ -32,14 +34,11 @@ const MatchList = () => {
     isImporting,
   } = useGetAllMatches();
 
-  // Remove importFile state because we don't need to store the file separately
 
-  // onFileChange will call handleImportMatches directly when user picks a file
   const onFileChange = async (e) => {
     if (e.target.files.length > 0) {
       const file = e.target.files[0];
       await handleImportMatches(file);
-      // تفريغ input الملف بعد الرفع عشان يسمح بإعادة الاختيار لو نفس الملف
       e.target.value = null;
     }
   };
@@ -75,16 +74,16 @@ const MatchList = () => {
                   Add Match
                 </button>
               </Link>
+                <ExportTemplate />
 
-              {/* تعديل هنا: زر اختيار الملف هو نفسه زر الاستيراد */}
               <div className="flex items-center gap-2">
                 <input
                   type="file"
                   id="import-file-input"
                   accept=".xlsx, .xls, .csv"
-                  onChange={onFileChange} // مباشرة يبدأ استيراد الملف
+                  onChange={onFileChange} 
                   className="hidden"
-                  disabled={isImporting} // تعطيل أثناء الاستيراد
+                  disabled={isImporting} 
                 />
                 <label
                   htmlFor="import-file-input"

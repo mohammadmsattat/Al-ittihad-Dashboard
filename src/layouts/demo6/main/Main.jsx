@@ -42,10 +42,11 @@ const Main = () => {
                   <ToolbarHeading />
 
                   <ToolbarActions>
-                    <Link to={'/account/home/get-started'} className="btn btn-sm btn-light">
+                    {/* <Link to={'/account/home/get-started'} className="btn btn-sm btn-light">
                       <KeenIcon icon="exit-down !text-base" />
                       Export
-                    </Link>
+                    </Link> */}
+                    
                     <Popover>
                       <PopoverTrigger asChild>
                         <button id="date" className={cn('btn btn-sm btn-light data-[state=open]:bg-light-active', !date && 'text-gray-400')}>
